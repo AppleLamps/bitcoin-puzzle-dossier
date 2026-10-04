@@ -20,7 +20,7 @@
     var id = (hash || '').replace(/^#/, '');
     if(pages.indexOf(id) !== -1) return id;
     if(/^crack-\d+$/.test(id)) return 'cracker';
-    return sectionOwner[id] || 'home';
+    return sectionOwner[id] || window.DEFAULT_PAGE || 'home';
   }
   function syncPage(){
     var page = pageFor(location.hash);

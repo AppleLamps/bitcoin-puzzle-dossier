@@ -13,13 +13,14 @@
     return textMatch && stateMatch;
   }
   function rowHtml(item){
-    return '<article class="ledger-grid ledger-row" role="button" tabindex="0" data-lot="' + item.n + '" aria-label="Open details for puzzle ' + item.n + '">' +
-      '<div class="ledger-num" data-label="PUZZLE">#' + item.n + '</div>' +
+    // The row is a plain container. Keyboard users get an explicit Details button; mouse users may click anywhere.
+    return '<article class="ledger-grid ledger-row" data-lot="' + item.n + '">' +
+      '<div class="ledger-num" data-label="PUZZLE"><button type="button" class="ledger-open" data-open aria-label="Open details for puzzle ' + item.n + '">#' + item.n + '</button></div>' +
       '<div class="ledger-address" data-label="ADDRESS">' + item.address + '</div>' +
       '<div class="ledger-range" data-label="KEY RANGE · HEX">' + D.rangeFor(item.n) + '</div>' +
       '<div class="ledger-original" data-label="BALANCE*">' + item.balance + ' BTC<small>original ' + item.original + '</small></div>' +
       '<div data-label="STATUS"><span class="state state-' + item.state + '">' + D.labels[item.state] + '</span></div>' +
-      '<div class="ledger-record" data-label="RECORD">' + item.record + '</div>' +
+      '<div class="ledger-record" data-label="RECORD">' + item.record + ' · <a class="source-link ledger-page-link" href="/puzzle/' + item.n + '/">page</a></div>' +
     '</article>';
   }
   function render(){
@@ -39,9 +40,12 @@
     rendered = true;
   }
   function onRowActivate(e){
+    if(e.target.closest('a')) return;            // links navigate on their own
     var row = e.target.closest('.ledger-row');
     if(!row) return;
-    if(e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return;
+    if(e.type === 'keydown'){                     // keyboard activation only via the Details button
+      if(!e.target.closest('[data-open]') || (e.key !== 'Enter' && e.key !== ' ')) return;
+    }
     e.preventDefault();
     window.PuzzleModal.open(Number(row.dataset.lot));
   }
@@ -53,6 +57,7 @@
     empty = document.getElementById('ledgerEmpty');
     toggleWrap = document.getElementById('retiredToggle');
     toggleBtn = document.getElementById('retiredButton');
+    try { var q = new URLSearchParams(location.search).get('q'); if(q) search.value = q; } catch(e){}
     search.addEventListener('input', render);
     filter.addEventListener('change', render);
     toggleBtn.addEventListener('click', function(){ showRetired = true; toggleBtn.setAttribute('aria-expanded', 'true'); render(); });
