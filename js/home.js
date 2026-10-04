@@ -15,7 +15,7 @@
     document.getElementById('statLatestNote').textContent = 'most recent solve, swept ' + best.s;
     var next = null; for(n=1;n<=160;n++){ if(D.puzzleState(n) === 'open'){ next = n; break; } }
     document.getElementById('statNext').textContent = '#' + next;
-    document.getElementById('statNextNote').textContent = 'cheapest unsolved lot · ' + D.balanceFor(next) + ' BTC · 2^' + (next-1) + ' keys';
+    document.getElementById('statNextNote').textContent = 'cheapest unsolved puzzle · ' + D.balanceFor(next) + ' BTC · 2^' + (next-1) + ' keys';
   }
   function bounty(){
     var usd = document.getElementById('bountyUsd'), btc = document.getElementById('bountyBtc'), note = document.getElementById('bountyNote');
@@ -34,7 +34,7 @@
     var rows = [71,72,73,74,76,80,90,100,110,120,140,160].filter(function(n){ return D.puzzleState(n) === 'open'; });
     var rate = 1e9; // one billion key tests (brute force) or group operations (kangaroo) per second
     function duration(secs){ return secs < 86400 ? (secs/3600).toFixed(1) + ' hours' : secs < 3.15e7 ? (secs/86400).toFixed(0) + ' days' : secs < 3.15e10 ? fmt(Math.round(secs/3.15e7)) + ' years' : (secs/3.15e7).toExponential(1) + ' years'; }
-    var html = '<div class="odds-row odds-head"><div>LOT</div><div>EXPECTED WORK</div><div>AT 1 B ops/s</div><div>PRIZE</div><div>METHOD</div></div>';
+    var html = '<div class="odds-row odds-head"><div>PUZZLE</div><div>EXPECTED WORK</div><div>AT 1 B ops/s</div><div>PRIZE</div><div>METHOD</div></div>';
     rows.forEach(function(n){
       var pk = D.hasPublicKey(n);
       // Brute force: half the interval on average, 2^(n-2) key tests.
@@ -42,7 +42,7 @@
       var exp = pk ? (n + 1) / 2 : n - 2;
       var expected = Math.pow(2, exp);
       var expLabel = pk ? '2^' + exp.toFixed(1).replace(/\.0$/, '') : '2^' + exp;
-      html += '<div class="odds-row" data-lot="' + n + '" role="button" tabindex="0" aria-label="Open details for lot ' + n + '"><div class="ledger-num">#' + n + '</div><div class="mono">' + expLabel + ' ≈ ' + expected.toExponential(2) + (pk ? ' ops' : ' keys') + '</div><div>' + duration(expected / rate) + '</div><div class="mono">' + D.balanceFor(n) + ' BTC</div><div>' + (pk ? 'Kangaroo · public key known' : 'Brute force · address only') + '</div></div>';
+      html += '<div class="odds-row" data-lot="' + n + '" role="button" tabindex="0" aria-label="Open details for puzzle ' + n + '"><div class="ledger-num">#' + n + '</div><div class="mono">' + expLabel + ' ≈ ' + expected.toExponential(2) + (pk ? ' ops' : ' keys') + '</div><div>' + duration(expected / rate) + '</div><div class="mono">' + D.balanceFor(n) + ' BTC</div><div>' + (pk ? 'Kangaroo · public key known' : 'Brute force · address only') + '</div></div>';
     });
     var el = document.getElementById('oddsTable');
     el.innerHTML = html;

@@ -1,4 +1,4 @@
-// Ledger table: filtering, collapsed retired lots, click-to-open detail rows.
+// Ledger table: filtering, collapsed retired puzzles, click-to-open detail rows.
 (function(){
   var D = window.PuzzleData;
   var rows, search, filter, count, empty, toggleWrap, toggleBtn;
@@ -13,8 +13,8 @@
     return textMatch && stateMatch;
   }
   function rowHtml(item){
-    return '<article class="ledger-grid ledger-row" role="button" tabindex="0" data-lot="' + item.n + '" aria-label="Open details for lot ' + item.n + '">' +
-      '<div class="ledger-num" data-label="LOT">#' + item.n + '</div>' +
+    return '<article class="ledger-grid ledger-row" role="button" tabindex="0" data-lot="' + item.n + '" aria-label="Open details for puzzle ' + item.n + '">' +
+      '<div class="ledger-num" data-label="PUZZLE">#' + item.n + '</div>' +
       '<div class="ledger-address" data-label="ADDRESS">' + item.address + '</div>' +
       '<div class="ledger-range" data-label="KEY RANGE · HEX">' + D.rangeFor(item.n) + '</div>' +
       '<div class="ledger-original" data-label="BALANCE*">' + item.balance + ' BTC<small>original ' + item.original + '</small></div>' +
@@ -27,13 +27,13 @@
     var f = filter.value;
     var numeric = /^\d+$/.test(raw) ? Number(raw) : null;
     var matched = allItems().filter(function(it){ return matches(it, raw, numeric, f); });
-    // Retired lots stay hidden unless the user opens them, searches for one directly, or filters to them.
+    // Retired puzzles stay hidden unless the user opens them, searches for one directly, or filters to them.
     var reveal = showRetired || f === 'retired' || raw !== '';
     var hiddenRetired = reveal ? [] : matched.filter(function(it){ return it.state === 'retired'; });
     var visible = reveal ? matched : matched.filter(function(it){ return it.state !== 'retired'; });
     rows.innerHTML = visible.map(rowHtml).join('');
     toggleWrap.hidden = hiddenRetired.length === 0;
-    toggleBtn.textContent = 'Show the remaining ' + hiddenRetired.length + ' retired lots (#' + D.RETIRED_FROM + '–256)';
+    toggleBtn.textContent = 'Show the remaining ' + hiddenRetired.length + ' retired puzzles (#' + D.RETIRED_FROM + '–256)';
     count.textContent = visible.length + (visible.length === 1 ? ' row' : ' rows') + (hiddenRetired.length ? ' · ' + hiddenRetired.length + ' retired hidden' : '');
     empty.hidden = visible.length !== 0 || hiddenRetired.length !== 0;
     rendered = true;

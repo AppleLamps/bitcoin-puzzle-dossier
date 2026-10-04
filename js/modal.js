@@ -1,4 +1,4 @@
-// Puzzle detail modal. PuzzleModal.open(n) renders everything known about lot n.
+// Puzzle detail modal. PuzzleModal.open(n) renders everything known about puzzle n.
 (function(){
   var modal, body, card, lastFocus, shell;
   var FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
@@ -13,11 +13,11 @@
   }
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function stateText(it){
-    if(it.state === 'preused') return 'Lots #1 and #2 were already in use before the puzzle was funded, so their emptying is not counted as a solve.';
-    if(it.state === 'retired') return 'The creator swept this lot on 11 July 2017 and moved the funds into the lower lots. There is nothing left to win here.';
+    if(it.state === 'preused') return 'Puzzles #1 and #2 were already in use before the puzzle was funded, so their emptying is not counted as a solve.';
+    if(it.state === 'retired') return 'The creator swept this puzzle on 11 July 2017 and moved the funds into the lower puzzles. There is nothing left to win here.';
     if(it.state === 'solved') return 'Solved and swept on ' + it.solveDate + '.' + (it.publicKey ? ' Its public key had been exposed in 2019, which made it reachable with Pollard’s kangaroo.' : '');
     return it.publicKey
-      ? 'Still open. The creator exposed this lot’s public key in 2019, so it can be attacked with Pollard’s kangaroo (about 2^' + Math.ceil(it.n/2) + ' operations) instead of address-only brute force.'
+      ? 'Still open. The creator exposed this puzzle’s public key in 2019, so it can be attacked with Pollard’s kangaroo (about 2^' + Math.ceil(it.n/2) + ' operations) instead of address-only brute force.'
       : 'Still open. Only the address is known, so a solver must brute-force the private-key interval and hash every candidate.';
   }
   function usdLine(it){
@@ -37,7 +37,7 @@
     var bits = it.n;
     var size = D.keyspaceSize(it.n);
     return '' +
-      '<div class="modal-kicker">LOT #' + it.n + ' · <span class="state state-' + it.state + '">' + D.labels[it.state] + '</span>' + (it.publicKey ? ' <span class="state state-public">PUBLIC KEY EXPOSED</span>' : '') + '</div>' +
+      '<div class="modal-kicker">PUZZLE #' + it.n + ' · <span class="state state-' + it.state + '">' + D.labels[it.state] + '</span>' + (it.publicKey ? ' <span class="state state-public">PUBLIC KEY EXPOSED</span>' : '') + '</div>' +
       '<h2 id="modalTitle" class="modal-title">' + bits + '-bit puzzle</h2>' +
       '<p class="modal-lede">' + esc(stateText(it)) + '</p>' +
       '<dl class="modal-facts">' +
