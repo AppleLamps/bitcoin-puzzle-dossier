@@ -13,6 +13,7 @@
   function $(id){ return document.getElementById(id); }
   function fmt(n){ return Number(n).toLocaleString('en-US'); }
   function fmtBig(b){ return BigInt(b).toLocaleString('en-US'); }
+  function fmtCompact(b){ var n = Number(b); return n < 1e6 ? n.toLocaleString('en-US') : new Intl.NumberFormat('en-US', { notation:'compact', maximumFractionDigits:2 }).format(n); }
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function dur(secs){
     if(!isFinite(secs)) return '—';
@@ -21,8 +22,9 @@
     if(secs < 3600) return Math.floor(secs/60) + ' min ' + Math.round(secs%60) + ' s';
     if(secs < 86400) return (secs/3600).toFixed(1) + ' h';
     if(secs < 3.15e7) return (secs/86400).toFixed(1) + ' days';
-    if(secs < 3.15e10) return fmt(Math.round(secs/3.15e7)) + ' years';
-    return (secs/3.15e7).toExponential(2) + ' years';
+    var years = secs / 3.15e7;
+    // Compact notation stops at trillions, so beyond that fall back to exponential.
+    return (years < 1e15 ? fmtCompact(Math.round(years)) : years.toExponential(2)) + ' years';
   }
   function log(msg, cls){
     var li = document.createElement('li');
@@ -75,9 +77,11 @@
   function elapsed(){ return pausedElapsed + (running ? (Date.now() - startedAt) / 1000 : 0); }
   function tick(){
     var t = totalChecked(), secs = elapsed();
-    el.checked.textContent = t.toLocaleString('en-US');
+    el.checked.textContent = fmtCompact(t);
+    el.checkedLabel.textContent = Number(t) >= 1e6 ? 'keys checked · exactly ' + t.toLocaleString('en-US') : 'keys checked';
     var rate = secs > 0 ? Number(t) / secs : 0;
-    el.rate.textContent = rate ? fmt(Math.round(rate)) + ' keys/s' : '—';
+    el.rate.textContent = rate ? fmtCompact(Math.round(rate)) : '—';
+    el.rateLabel.textContent = rate ? 'keys per second · ' + fmt(Math.round(rate)) : 'keys per second';
     el.elapsed.textContent = dur(secs);
     if(current){
       var size = Number(BigInt(D.keyspaceSize(current.n)));
@@ -89,7 +93,10 @@
       el.progressbar.setAttribute('aria-valuenow', Math.min(100, pct).toFixed(2));
       el.pct.textContent = pct >= 0.01 ? pct.toFixed(2) + '%' : pct > 0 ? pct.toExponential(2) + '%' : '0%';
       el.pctlabel.textContent = current.mode === 'random' ? 'chance it was already hit' : 'of this sweep';
-      el.remaining.textContent = current.mode === 'random' ? 'no sweep end · 50% odds after ' + (rate ? dur(size * Math.LN2 / rate) : '—') : rate ? dur(Math.max(0, span - Number(t)) / rate) : '—';
+      var isRandom = current.mode === 'random';
+      el.remaining.textContent = isRandom ? (rate ? dur(size * Math.LN2 / rate) : '—') : rate ? dur(Math.max(0, span - Number(t)) / rate) : '—';
+      el.remaining.classList.toggle('wrap', el.remaining.textContent.length > 12);
+      el.remainingLabel.textContent = isRandom ? 'to 50% odds · no sweep end' : 'time to finish sweep';
     }
   }
   function renderThreads(states){
@@ -151,7 +158,7 @@
     current.markStopping = function(){ stopping = true; };
     for(var i=0;i<run.cores;i++) states.push({});
     renderThreads(states);
-    el.workers.textContent = run.cores + (run.cores === 1 ? ' thread' : ' threads');
+    el.workers.textContent = String(run.cores);
     startedAt = Date.now();
     setRunning(true);
     setStatus((resumeMaps ? 'Resumed' : 'Running') + ' · ' + (run.mode === 'random' ? 'random sampling' : 'sequential sweep') + ' on ' + run.cores + ' thread' + (run.cores>1?'s':'') + '.', 'run');
@@ -259,7 +266,7 @@
     return false;
   }
   document.addEventListener('DOMContentLoaded', function(){
-    ['puzzle','mode','custom','customWrap','threads','quick','start','stop','resume','bench','status','target','lotstate','range','space','eta','checked','rate','elapsed','remaining','workers','pct','pctlabel','progress','progressbar','threadlist','result','resultBody','log'].forEach(function(k){ el[k] = $('crk-' + k); });
+    ['puzzle','mode','custom','customWrap','threads','quick','start','stop','resume','bench','status','target','lotstate','range','space','eta','checked','checkedLabel','rate','rateLabel','elapsed','remaining','remainingLabel','workers','pct','pctlabel','progress','progressbar','threadlist','result','resultBody','log'].forEach(function(k){ el[k] = $('crk-' + k); });
     if(!el.puzzle) return;
     if(typeof Worker === 'undefined' || typeof BigInt === 'undefined'){ setStatus('This browser lacks Web Workers or BigInt; the cracker cannot run here.', 'bad'); el.start.disabled = true; el.bench.disabled = true; return; }
     fillSelects();
