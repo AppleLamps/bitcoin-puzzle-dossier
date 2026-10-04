@@ -294,3 +294,22 @@ body.modal-open{overflow:hidden}
   .cracker-facts{grid-template-columns:1fr;gap:2px 0}.cracker-facts dt{margin-top:8px}
   .odds-row{grid-template-columns:50px 1fr;gap:6px 12px}.odds-head{display:none}
 }
+
+/* ---- Header links: X profile and BTC tip ---- */
+.topline-links{display:flex;align-items:center;gap:8px;margin-left:auto;min-width:0}
+.donate{position:relative}
+.page-tabs a,.stamp{white-space:nowrap}
+.x-link{display:inline-flex;align-items:center;gap:6px;text-decoration:none;padding:6px 9px;border:1px solid var(--line);border-radius:3px;color:var(--ink);font-weight:700;white-space:nowrap}
+.x-link:hover{background:var(--panel);border-color:var(--ink)}
+.donate{display:inline-flex;align-items:center;gap:8px;cursor:pointer;border:1px solid var(--accent);border-radius:3px;background:transparent;color:var(--ink);padding:6px 9px;font:inherit;font-weight:700;letter-spacing:.04em;min-width:0}
+.donate:hover{background:var(--accent-soft)}
+.donate-label{color:var(--accent)}
+.donate-addr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.donate-short{font-weight:500;letter-spacing:0}
+.donate-copied{color:var(--proof);font-weight:700}
+.donate-copied:empty{display:none}
+@media(max-width:800px){
+  .topline{flex-wrap:wrap}
+  .topline-links{margin-left:0;order:3;width:100%;justify-content:flex-start;flex-wrap:wrap}
+  .x-link,.donate{padding:5px 8px;font-size:10px}
+}
