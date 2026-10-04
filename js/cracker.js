@@ -46,8 +46,8 @@
       if(it.state === 'open'){ (it.publicKey ? pub : open).push(o); } else verify.push(o);
     }
     el.puzzle.innerHTML = '<optgroup label="Verify the engine (already solved, no prize)">' + verify.join('') + '</optgroup>' +
-      '<optgroup label="Open lots, address only (brute force)">' + open.join('') + '</optgroup>' +
-      '<optgroup label="Open lots, public key exposed (kangaroo territory)">' + pub.join('') + '</optgroup>';
+      '<optgroup label="Open puzzles, address only (brute force)">' + open.join('') + '</optgroup>' +
+      '<optgroup label="Open puzzles, public key exposed (kangaroo territory)">' + pub.join('') + '</optgroup>';
     var t = []; for(var c=1;c<=MAX_CORES;c++) t.push('<option value="' + c + '"' + (c===MAX_CORES?' selected':'') + '>' + c + (c===MAX_CORES ? ' (all cores)' : '') + '</option>');
     el.threads.innerHTML = t.join('');
   }
@@ -59,7 +59,7 @@
     el.space.textContent = fmtBig(size) + ' keys (2^' + (n-1) + ')';
     var st = it.state === 'open' ? '<span class="state state-open">OPEN</span> ' + it.balance + ' BTC on the line' + (it.publicKey ? ' · public key exposed, kangaroo would need ~2^' + Math.ceil((n+1)/2) + ' ops' : '')
            : it.state === 'solved' ? '<span class="state state-solved">SOLVED</span> swept ' + it.solveDate + ' · holds nothing, good for proving the engine'
-           : '<span class="state state-preused">PRE-USED</span> not a true puzzle lot';
+           : '<span class="state state-preused">PRE-USED</span> not a true puzzle';
     el.lotstate.innerHTML = st;
     var rate = expectedRate();
     var full = Number(size) / rate, half = full / 2;
@@ -129,7 +129,7 @@
       var raw = el.custom.value.trim().replace(/^0x/i, '');
       if(!/^[0-9a-f]+$/i.test(raw)){ setStatus('Enter a hex start key inside the range.', 'bad'); el.custom.focus(); return null; }
       var s = BigInt('0x' + raw);
-      if(s < lo || s > hi){ setStatus('Start key 0x' + raw + ' is outside this lot’s range.', 'bad'); el.custom.focus(); return null; }
+      if(s < lo || s > hi){ setStatus('Start key 0x' + raw + ' is outside this puzzle’s range.', 'bad'); el.custom.focus(); return null; }
       lo = s; mode = 'sequential';
     }
     var cores = threadsSelected();
@@ -148,11 +148,11 @@
         resumeState = run.mode === 'sequential' ? { n:run.n, mode:run.uiMode, run:run, maps:stopMaps, checked:totalChecked(), elapsed:pausedElapsed } : null;
         el.resume.hidden = !resumeState;
         setStatus('Stopped after ' + fmtBig(totalChecked()) + ' keys.' + (resumeState ? ' You can resume from exactly where each thread was.' : ''), 'idle');
-        log('Stopped lot #' + run.n + ' at ' + fmtBig(totalChecked()) + ' keys');
+        log('Stopped puzzle #' + run.n + ' at ' + fmtBig(totalChecked()) + ' keys');
       } else {
         resumeState = null; el.resume.hidden = true;
-        setStatus('Range exhausted with no match.' + (run.uiMode === 'custom' ? ' The key is below your start point, or the address is not in this lot.' : ' Every key in the sweep was tested.'), 'bad');
-        log('Sweep of lot #' + run.n + ' exhausted after ' + fmtBig(totalChecked()) + ' keys');
+        setStatus('Range exhausted with no match.' + (run.uiMode === 'custom' ? ' The key is below your start point, or the address is not in this puzzle.' : ' Every key in the sweep was tested.'), 'bad');
+        log('Sweep of puzzle #' + run.n + ' exhausted after ' + fmtBig(totalChecked()) + ' keys');
       }
     }
     current.markStopping = function(){ stopping = true; };
@@ -175,7 +175,7 @@
             totals[idx] = BigInt(m.checked); resumeState = null; el.resume.hidden = true;
             pausedElapsed = elapsed(); killWorkers(); setRunning(false);
             setStatus('Private key found. Details below.', 'found');
-            log('<b>Hit on lot #' + run.n + '</b> by thread ' + (idx+1) + ' after ' + fmtBig(totalChecked()) + ' keys', 'hit');
+            log('<b>Hit on puzzle #' + run.n + '</b> by thread ' + (idx+1) + ' after ' + fmtBig(totalChecked()) + ' keys', 'hit');
             showResult(m, run);
           }
           else if(m.type === 'exhausted' || m.type === 'stopped'){
@@ -197,14 +197,14 @@
     if(running || busy) return;
     var run = buildRun(); if(!run) return;
     el.result.hidden = true; pausedElapsed = 0; resumeState = null; el.resume.hidden = true;
-    log('Started lot #' + run.n + ' · ' + (run.mode === 'random' ? 'random' : 'sequential from 0x' + run.lo.toString(16)) + ' · ' + run.cores + ' thread' + (run.cores>1?'s':''));
+    log('Started puzzle #' + run.n + ' · ' + (run.mode === 'random' ? 'random' : 'sequential from 0x' + run.lo.toString(16)) + ' · ' + run.cores + ' thread' + (run.cores>1?'s':''));
     launch(run, null);
   }
   function resume(){
     if(running || busy || !resumeState) return;
     var run = resumeState.run; pausedElapsed = resumeState.elapsed;
     var maps = resumeState.maps; var prior = resumeState.checked;
-    log('Resumed lot #' + run.n + ' from saved thread positions');
+    log('Resumed puzzle #' + run.n + ' from saved thread positions');
     launch(run, maps);
     // carry the earlier count forward so totals keep climbing
     var carry = prior; totals.push(carry);
@@ -230,7 +230,7 @@
     var hex = C.hex64(k), wif = C.privToWIF(k);
     el.result.hidden = false;
     el.resultBody.innerHTML =
-      '<div class="found-banner">' + (ok ? 'PRIVATE KEY FOUND · LOT #' + run.n : 'REPORTED KEY FAILED VERIFICATION') + '</div>' +
+      '<div class="found-banner">' + (ok ? 'PRIVATE KEY FOUND · PUZZLE #' + run.n : 'REPORTED KEY FAILED VERIFICATION') + '</div>' +
       '<dl class="modal-facts result-facts">' +
       '<dt>Private key (hex)</dt><dd class="mono"><code>' + hex + '</code>' + copyBtn(hex, 'private key hex') + '</dd>' +
       '<dt>Private key (decimal)</dt><dd class="mono">' + k.toString() + copyBtn(k.toString(), 'private key decimal') + '</dd>' +
@@ -240,8 +240,8 @@
       '<dt>Keys checked</dt><dd class="mono">' + fmtBig(totalChecked()) + ' across ' + run.cores + ' thread' + (run.cores>1?'s':'') + ' in ' + dur(elapsed()) + '</dd>' +
       '</dl>' +
       '<p class="modal-foot">' + (it.state === 'open'
-        ? 'This lot is unsolved and holds ' + it.balance + ' BTC. Import the WIF into a wallet you control and sweep immediately. Anyone else who finds this key can take the funds, and solved puzzle spends have been front-run in the mempool before: broadcast through a private relay with a high fee.'
-        : 'This lot was already solved on ' + it.solveDate + ' and holds no balance. The key is real and was re-derived on the main thread independently of the worker, which is how you can tell the engine does genuine work.') + '</p>';
+        ? 'This puzzle is unsolved and holds ' + it.balance + ' BTC. Import the WIF into a wallet you control and sweep immediately. Anyone else who finds this key can take the funds, and solved puzzle spends have been front-run in the mempool before: broadcast through a private relay with a high fee.'
+        : 'This puzzle was already solved on ' + it.solveDate + ' and holds no balance. The key is real and was re-derived on the main thread independently of the worker, which is how you can tell the engine does genuine work.') + '</p>';
     el.result.scrollIntoView({ behavior:'smooth', block:'nearest' });
   }
   function onCopy(e){
