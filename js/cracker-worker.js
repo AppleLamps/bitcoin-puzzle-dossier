@@ -35,16 +35,16 @@ function run(m){
   var mode = m.mode;                       // 'sequential' | 'random'
   var span = end - start + 1n;
   var stride = span / BigInt(LANES); if(stride < 1n) stride = 1n;
-  var lanes = [], keys = [], laneEnds = [];
+  var lanes = [], keys = [], laneEnds = [], laneIdx = []; // laneIdx keeps each lane's original slot so a stop can be resumed
   var buf = new Uint8Array(33);
   var checked = 0n, lastReport = Date.now();
   var sinceSeed = 0, RESEED_AFTER = 4096;
 
   function laneEnd(i){ return i === LANES - 1 ? end : start + BigInt(i+1)*stride - 1n; }
   function seedLanes(resume){
-    lanes.length = 0; keys.length = 0; laneEnds.length = 0;
+    lanes.length = 0; keys.length = 0; laneEnds.length = 0; laneIdx.length = 0;
     if(mode === 'random'){
-      for(var i=0;i<LANES;i++){ var k = start + randomBig(span); keys.push(k); lanes.push(C.mulG(k)); laneEnds.push(end); }
+      for(var i=0;i<LANES;i++){ var k = start + randomBig(span); keys.push(k); lanes.push(C.mulG(k)); laneEnds.push(end); laneIdx.push(i); }
       return;
     }
     for(i=0;i<LANES;i++){
@@ -52,7 +52,7 @@ function run(m){
       var k2 = resume ? BigInt('0x' + resume[i]) : start + BigInt(i)*stride;
       var le = laneEnd(i);
       if(k2 > le || k2 > end) continue;
-      keys.push(k2); lanes.push(C.mulG(k2)); laneEnds.push(le);
+      keys.push(k2); lanes.push(C.mulG(k2)); laneEnds.push(le); laneIdx.push(i);
     }
   }
   function matches(h){ for(var i=0;i<20;i++) if(h[i]!==target[i]) return false; return true; }
@@ -67,7 +67,7 @@ function run(m){
       running = false;
       // Sequential resume needs every lane's position in its original slot, so rebuild the full 128-wide map.
       var map = {};
-      if(mode === 'sequential'){ for(var i=0;i<keys.length;i++){ map[Number((keys[i] - start) / stride)] = keys[i].toString(16); } }
+      if(mode === 'sequential'){ for(var i=0;i<keys.length;i++){ map[laneIdx[i]] = keys[i].toString(16); } }
       self.postMessage({ type:'stopped', checked:checked.toString(), resume: mode === 'sequential' ? map : null, current:(minKey()||0n).toString(16) });
       return;
     }
@@ -85,7 +85,7 @@ function run(m){
       C.batchAddG(lanes);
       for(i=0;i<lanes.length;i++){
         keys[i] += 1n;
-        if(mode === 'sequential' && keys[i] > laneEnds[i]){ lanes.splice(i,1); keys.splice(i,1); laneEnds.splice(i,1); i--; }
+        if(mode === 'sequential' && keys[i] > laneEnds[i]){ lanes.splice(i,1); keys.splice(i,1); laneEnds.splice(i,1); laneIdx.splice(i,1); i--; }
       }
       if(mode === 'random' && ++sinceSeed >= RESEED_AFTER){ sinceSeed = 0; seedLanes(); }
       if(lanes.length === 0){ running = false; self.postMessage({ type:'exhausted', checked:checked.toString() }); return; }

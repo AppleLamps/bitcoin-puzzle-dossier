@@ -4,7 +4,8 @@
   var el = {}, workers = [], running = false, startedAt = 0, pausedElapsed = 0, totals = [], tickTimer = null;
   var current = null;          // {n, item, lo, hi, mode, cores, chunk}
   var resumeState = null;      // per-worker resume maps after a stop
-  var benchRate = null;        // measured keys/s for all threads
+  var bench = null;            // {rate, threads}: measured keys/s and the thread count it was measured on
+  var busy = false;            // true while a benchmark is running
   var MAX_CORES = Math.max(1, Math.min(32, navigator.hardwareConcurrency || 2));
   var PER_CORE_GUESS = 110000;
 
@@ -31,7 +32,7 @@
   }
   function setStatus(txt, cls){ el.status.textContent = txt; el.status.className = 'cracker-status ' + (cls || 'idle'); }
   function threadsSelected(){ return Number(el.threads.value) || MAX_CORES; }
-  function expectedRate(){ return benchRate || PER_CORE_GUESS * threadsSelected(); }
+  function expectedRate(){ return bench ? bench.rate / bench.threads * threadsSelected() : PER_CORE_GUESS * threadsSelected(); }
 
   function fillSelects(){
     var verify = [], open = [], pub = [];
@@ -59,11 +60,11 @@
     el.lotstate.innerHTML = st;
     var rate = expectedRate();
     var full = Number(size) / rate, half = full / 2;
-    el.eta.textContent = 'At ' + fmt(Math.round(rate)) + ' keys/s on ' + threadsSelected() + ' thread' + (threadsSelected()>1?'s':'') + ': expected ' + dur(half) + ', worst case ' + dur(full) + (benchRate ? ' (benchmarked)' : ' (estimate; run the benchmark)');
+    el.eta.textContent = 'At ' + fmt(Math.round(rate)) + ' keys/s on ' + threadsSelected() + ' thread' + (threadsSelected()>1?'s':'') + ': expected ' + dur(half) + ', worst case ' + dur(full) + (bench ? (bench.threads === threadsSelected() ? ' (benchmarked)' : ' (scaled from a ' + bench.threads + '-thread benchmark)') : ' (estimate; run the benchmark)');
     el.custom.placeholder = r.start;
     el.customWrap.hidden = el.mode.value !== 'custom';
     [].slice.call(el.quick.querySelectorAll('button')).forEach(function(b){ b.classList.toggle('active', Number(b.dataset.lot) === n); });
-    el.resume.hidden = !(resumeState && resumeState.n === n && resumeState.mode === el.mode.value && !running);
+    el.resume.hidden = !(resumeState && resumeState.n === n && resumeState.mode === el.mode.value && !running && !busy);
     try { localStorage.setItem('crk', JSON.stringify({ n:n, mode:el.mode.value, threads:threadsSelected() })); } catch(e){}
   }
   function totalChecked(){ return totals.reduce(function(a,b){ return a + b; }, 0n); }
@@ -77,13 +78,14 @@
     if(current){
       var size = Number(BigInt(D.keyspaceSize(current.n)));
       var span = Number(current.hi - current.lo + 1n);
-      var frac = Number(t) / (current.mode === 'random' ? size : span);
+      // Random mode samples with replacement, so the chance the key has been hit is 1 - e^(-checked/size), never a sweep.
+      var frac = current.mode === 'random' ? 1 - Math.exp(-Number(t) / size) : Number(t) / span;
       var pct = frac * 100;
       el.progress.style.width = Math.min(100, pct) + '%';
       el.progressbar.setAttribute('aria-valuenow', Math.min(100, pct).toFixed(2));
       el.pct.textContent = pct >= 0.01 ? pct.toFixed(2) + '%' : pct > 0 ? pct.toExponential(2) + '%' : '0%';
       el.pctlabel.textContent = current.mode === 'random' ? 'chance it was already hit' : 'of this sweep';
-      el.remaining.textContent = rate ? dur((current.mode === 'random' ? size : span - Number(t)) / rate) : '—';
+      el.remaining.textContent = current.mode === 'random' ? 'no sweep end · 50% odds after ' + (rate ? dur(size * Math.LN2 / rate) : '—') : rate ? dur(Math.max(0, span - Number(t)) / rate) : '—';
     }
   }
   function renderThreads(states){
@@ -92,12 +94,20 @@
     }).join('');
   }
   function killWorkers(){ workers.forEach(function(w){ w.terminate(); }); workers = []; }
+  function lockControls(on){
+    el.puzzle.disabled = el.mode.disabled = el.custom.disabled = el.threads.disabled = on;
+    el.quick.classList.toggle('disabled', on);
+  }
   function setRunning(on){
     running = on;
     el.start.hidden = on; el.stop.hidden = !on; el.bench.disabled = on;
-    el.puzzle.disabled = el.mode.disabled = el.custom.disabled = el.threads.disabled = on;
-    el.quick.classList.toggle('disabled', on);
+    lockControls(on);
     if(!on){ clearInterval(tickTimer); tick(); }
+  }
+  function setBusy(on){
+    busy = on;
+    el.start.disabled = on; el.bench.disabled = on; el.resume.disabled = on;
+    lockControls(on);
   }
 
   function buildRun(){
@@ -166,14 +176,14 @@
     clearInterval(tickTimer); tickTimer = setInterval(tick, 300);
   }
   function start(){
-    if(running) return;
+    if(running || busy) return;
     var run = buildRun(); if(!run) return;
     el.result.hidden = true; pausedElapsed = 0; resumeState = null; el.resume.hidden = true;
     log('Started lot #' + run.n + ' · ' + (run.mode === 'random' ? 'random' : 'sequential from 0x' + run.lo.toString(16)) + ' · ' + run.cores + ' thread' + (run.cores>1?'s':''));
     launch(run, null);
   }
   function resume(){
-    if(running || !resumeState) return;
+    if(running || busy || !resumeState) return;
     var run = resumeState.run; pausedElapsed = resumeState.elapsed;
     var maps = resumeState.maps; var prior = resumeState.checked;
     log('Resumed lot #' + run.n + ' from saved thread positions');
@@ -183,12 +193,12 @@
   }
   function stop(){ if(!running) return; setStatus('Stopping…', 'idle'); workers.forEach(function(w){ w.postMessage({ type:'stop' }); }); }
   function benchmark(){
-    if(running) return;
-    el.bench.disabled = true; setStatus('Benchmarking ' + threadsSelected() + ' thread' + (threadsSelected()>1?'s':'') + ' for 3 seconds…', 'run');
+    if(running || busy) return;
+    setBusy(true); setStatus('Benchmarking ' + threadsSelected() + ' thread' + (threadsSelected()>1?'s':'') + ' for 3 seconds…', 'run');
     var n = threadsSelected(), done = 0, keys = 0, ws = [];
     for(var i=0;i<n;i++){
       var w = new Worker('js/cracker-worker.js');
-      w.onmessage = function(e){ if(e.data.type !== 'bench') return; keys += e.data.keys / (e.data.ms/1000); if(++done === n){ ws.forEach(function(x){ x.terminate(); }); benchRate = Math.round(keys); el.bench.disabled = false; setStatus('Benchmark: ' + fmt(benchRate) + ' keys/s across ' + n + ' thread' + (n>1?'s':'') + '. Estimates now use this figure.', 'idle'); log('Benchmark ' + fmt(benchRate) + ' keys/s on ' + n + ' thread' + (n>1?'s':'')); describe(); } };
+      w.onmessage = function(e){ if(e.data.type !== 'bench') return; keys += e.data.keys / (e.data.ms/1000); if(++done === n){ ws.forEach(function(x){ x.terminate(); }); bench = { rate: Math.round(keys), threads: n }; setBusy(false); setStatus('Benchmark: ' + fmt(bench.rate) + ' keys/s across ' + n + ' thread' + (n>1?'s':'') + '. Estimates now use this figure.', 'idle'); log('Benchmark ' + fmt(bench.rate) + ' keys/s on ' + n + ' thread' + (n>1?'s':'')); describe(); } };
       w.postMessage({ type:'bench', ms:3000 }); ws.push(w);
     }
   }
