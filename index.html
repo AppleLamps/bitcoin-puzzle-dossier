@@ -13,12 +13,123 @@
     <div class="topline">
       <div class="stamp">INVESTIGATIVE DOSSIER · RESEARCHED 03 OCT 2026</div>
       <nav class="page-tabs" aria-label="Pages">
+        <a href="#home" data-page-link="home">The puzzle</a>
         <a href="#dossier" data-page-link="dossier">Case file</a>
         <a href="#ledger" data-page-link="ledger">Puzzle ledger</a>
       </nav>
     </div>
 
-    <div id="dossier" class="page-view">
+    <section id="home" class="page-view home-page">
+      <header class="hero">
+        <div>
+          <div class="section-index">THE 2015 BITCOIN PUZZLE TRANSACTION</div>
+          <h1>160 locks.<br>One doubling key.</h1>
+          <p class="lede">On 15 January 2015 someone funded 256 addresses whose private keys sit in ever-larger ranges: lot N hides inside <strong>[2^(N−1), 2^N)</strong>. Solvers have cracked the easy end. The hard end is still paying.</p>
+        </div>
+        <aside class="verdict">
+          <b>UNSOLVED PRIZE POOL</b>
+          <p class="num" id="bountyUsd">—</p>
+          <p><strong id="bountyBtc">903.01667813 BTC</strong> across <span id="statOpenInline">77</span> open lots</p>
+          <small class="bounty-note" id="bountyNote">Fetching live BTC price…</small>
+        </aside>
+      </header>
+
+      <div class="quick" aria-label="Puzzle status">
+        <article><div class="num" id="statSolved">—</div><p>lots genuinely solved so far, out of 160 that can be solved</p></article>
+        <article><div class="num" id="statOpen">—</div><p>lots still open, #71 up to #160, all funded</p></article>
+        <article><div class="num" id="statLatest">—</div><p id="statLatestNote">most recent solve</p></article>
+        <article><div class="num" id="statNext">—</div><p id="statNextNote">cheapest unsolved lot, next in line</p></article>
+      </div>
+
+      <nav class="rail" aria-label="Puzzle sections">
+        <div class="rail-inner">
+          <a href="#how">How it works</a>
+          <a href="#attempt">How to attempt it</a>
+          <a href="#cracker">Web cracker</a>
+          <a href="#odds">The odds</a>
+        </div>
+      </nav>
+
+      <main>
+        <section class="section" id="how">
+          <div class="section-head"><div class="section-index">01</div><h2>How the puzzle works</h2><p>One transaction, 256 outputs, a private key per output that lives in a known interval.</p></div>
+          <div class="content">
+            <p>Every lot is an ordinary pay-to-pubkey-hash address. What makes it a puzzle is that the private key for lot N was chosen from a tiny slice of the 256-bit keyspace: an integer between 2^(N−1) and 2^N − 1. Lot 1 has a single candidate. Lot 20 has about half a million. Lot 71, the cheapest still unsolved, has 1.18 sextillion.</p>
+            <div class="how-grid">
+              <div class="how-card"><b>01 · PICK A LOT</b><p>Choose a puzzle number N. Its address and key range are fixed and public. The ledger tab lists all of them.</p></div>
+              <div class="how-card"><b>02 · ENUMERATE KEYS</b><p>Walk the integers in [2^(N−1), 2^N). For each one, multiply the secp256k1 generator by it to get a public key.</p></div>
+              <div class="how-card"><b>03 · HASH AND COMPARE</b><p>SHA-256 then RIPEMD-160 the compressed public key. If the 20-byte result equals the address’s hash, you hold the key.</p></div>
+              <div class="how-card"><b>04 · SWEEP THE PRIZE</b><p>Import the key into a wallet and move the coins. Do it fast: bots watch the mempool for exactly these spends.</p></div>
+            </div>
+            <p>The creator later topped the prizes up to N/100 BTC per lot, swept lots 161 to 256 back in 2017, and in 2019 revealed the public keys of every fifth lot from 65 to 160. Those public-key lots can be attacked with Pollard’s kangaroo, which needs roughly the square root of the work of a blind search. Full background on who did this and why is in the <a href="#dossier">case file</a>.</p>
+          </div>
+        </section>
+
+        <section class="section" id="attempt">
+          <div class="section-head"><div class="section-index">02</div><h2>How to attempt it</h2><p>What serious solvers actually run, and what each approach costs.</p></div>
+          <div class="content">
+            <p>There is no trick. Every solve so far has been raw computation, so the question is only how many keys per second you can test and how lucky you are.</p>
+            <details open><summary>Address-only lots: brute force<span>#71–#160 except every fifth</span></summary><div class="detail-body">
+              <p>You only know the address, so each candidate key needs a full elliptic-curve multiplication plus two hashes. GPU tools such as BitCrack, KeyHunt-Cuda and VanitySearch-style kernels do this at a few hundred million to a few billion keys per second per card. Lot 71 needs on average 2^69 tests, about 590 quintillion. At one billion keys per second that is around 18,700 years for one card.</p>
+              <p>Random sampling versus sequential scanning does not change your expected time. It only changes whether you duplicate work with other solvers scanning from the bottom.</p>
+            </div></details>
+            <details><summary>Public-key lots: Pollard’s kangaroo<span>#140, #145, #150, #155, #160</span></summary><div class="detail-body">
+              <p>When the public key is known the problem becomes a discrete logarithm in a bounded interval. Kangaroo (JeanLucPons’ CUDA implementation is the standard) solves an N-bit interval in about 2·√(2^N) group operations. Lot 140 needs on the order of 2^71 operations, which is why #130 fell in 2024 to a large GPU pool and #135 fell in July 2026. Lot 140 is the current frontier; expect it to take a cluster, not a desktop.</p>
+            </div></details>
+            <details><summary>Pools and the front-running problem<span>Why a found key is not yet a prize</span></summary><div class="detail-body">
+              <p>Pools split the interval among contributors and share the reward. Solo or pooled, the dangerous moment is the spend. When your sweep transaction hits the mempool, the public key is revealed, and for lots below about 2^125 a well-provisioned bot can derive the private key and replace your transaction with a higher fee before it confirms. Solvers of #66 lost exactly this race in 2024. Broadcast through a private relay or a miner-direct channel, and use a high fee.</p>
+            </div></details>
+            <details><summary>Tools and references<span>Where to start</span></summary><div class="detail-body">
+              <p class="source-links"><a class="source-link" href="https://github.com/JeanLucPons/Kangaroo" target="_blank" rel="noopener">JeanLucPons / Kangaroo ↗</a> · <a class="source-link" href="https://github.com/albertobsd/keyhunt" target="_blank" rel="noopener">albertobsd / keyhunt ↗</a> · <a class="source-link" href="https://github.com/brichard19/BitCrack" target="_blank" rel="noopener">brichard19 / BitCrack ↗</a> · <a class="source-link" href="https://privatekeys.pw/puzzles/bitcoin-puzzle-tx" target="_blank" rel="noopener">privatekeys.pw puzzle tracker ↗</a> · <a class="source-link" href="https://bitcointalk.org/index.php?topic=1306983.0" target="_blank" rel="noopener">BitcoinTalk thread ↗</a></p>
+            </div></details>
+          </div>
+        </section>
+
+        <section class="section" id="cracker">
+          <div class="section-head"><div class="section-index">03</div><h2>Web cracker</h2><p>A real brute-force engine running in your browser’s worker threads. Nothing leaves your device.</p></div>
+          <div class="content">
+            <p>Pick a lot and press run. The page derives public keys with its own secp256k1 implementation, hashes them, and compares against the target address. On an already-solved lot it finds the real private key within seconds, which is how you can tell it is not a toy. On an open lot it is honest about the odds.</p>
+            <div class="cracker" id="webCracker">
+              <div class="cracker-controls">
+                <label class="ledger-field">PUZZLE<select id="crk-puzzle"></select></label>
+                <label class="ledger-field">STRATEGY<select id="crk-mode"><option value="sequential">Sequential from range start</option><option value="random">Random sampling</option><option value="custom">Sequential from custom start</option></select></label>
+                <label class="ledger-field" id="crk-customWrap" hidden>START KEY · HEX<input id="crk-custom" type="text" spellcheck="false" autocomplete="off"></label>
+                <div class="cracker-buttons"><button type="button" class="btn-primary" id="crk-start">Run on this device</button><button type="button" class="btn-secondary" id="crk-stop" hidden>Stop</button></div>
+              </div>
+              <dl class="cracker-facts">
+                <dt>Target</dt><dd class="mono"><a id="crk-target" class="source-link" target="_blank" rel="noopener"></a></dd>
+                <dt>Range</dt><dd class="mono" id="crk-range"></dd>
+                <dt>Keyspace</dt><dd class="mono" id="crk-space"></dd>
+                <dt>Estimate</dt><dd id="crk-eta"></dd>
+              </dl>
+              <div class="cracker-status idle" id="crk-status">Idle. Local engine, runs on your CPU only.</div>
+              <div class="cracker-progress"><div class="cracker-bar" id="crk-progress"></div></div>
+              <div class="cracker-stats">
+                <div><b id="crk-checked">0</b><span>keys checked</span></div>
+                <div><b id="crk-rate">—</b><span>throughput</span></div>
+                <div><b id="crk-elapsed">0 s</b><span>elapsed</span></div>
+                <div><b id="crk-workers">—</b><span>threads</span></div>
+                <div><b id="crk-pct">0%</b><span>of keyspace</span></div>
+                <div><b id="crk-current" class="mono small">—</b><span>current key (thread 1)</span></div>
+              </div>
+              <div class="cracker-result" id="crk-result" hidden><div id="crk-resultBody"></div></div>
+            </div>
+            <p class="chain-note">Throughput here is pure JavaScript BigInt math, roughly a hundred thousand keys per second per core. A single modern GPU is ten thousand times faster. Use this to understand the mechanics and to verify solved lots, then move to GPU tooling if you mean to compete.</p>
+          </div>
+        </section>
+
+        <section class="section" id="odds">
+          <div class="section-head"><div class="section-index">04</div><h2>The odds</h2><p>What the remaining lots actually cost to crack.</p></div>
+          <div class="content">
+            <p>Each step up doubles the work. The table shows the expected number of key tests for the next few unsolved lots and the time at a billion tests per second, which is a realistic single high-end GPU rate for address-only search.</p>
+            <div class="odds-table" id="oddsTable"></div>
+            <p>Lot 71 is within reach of a dedicated farm over years, or a very large pool over months. Lot 100 and above are beyond any brute force at today’s hardware. The public-key lots are a separate race: #140 is roughly a thousand times harder than #130 was, and #130 took a GPU pool most of a year.</p>
+          </div>
+        </section>
+      </main>
+    </section>
+
+    <div id="dossier" class="page-view" hidden>
     <header class="hero">
       <div>
         <h1>The creator is still unknown.</h1>
@@ -30,16 +141,11 @@
       </aside>
     </header>
 
-    <div class="quick quick-5" aria-label="Case summary">
+    <div class="quick" aria-label="Case summary">
       <article><div class="num">256</div><p>outputs in the original January 2015 transaction</p></article>
       <article><div class="num">32.896</div><p>BTC originally distributed — not roughly 1,000 BTC</p></article>
       <article><div class="num">1</div><p>post ever attributed to the strongest creator claimant</p></article>
       <article><div class="num">11 wk</div><p>from the claimant’s promise to the matching on-chain spend</p></article>
-      <article class="bounty" id="bountyTile" aria-live="polite">
-        <div class="num" id="bountyUsd">—</div>
-        <p><strong id="bountyBtc">903.01667813 BTC</strong> still sitting in the 77 unsolved lots</p>
-        <small class="bounty-note" id="bountyNote">Fetching live BTC price…</small>
-      </article>
     </div>
 
     <nav class="rail" aria-label="Dossier sections">
@@ -244,10 +350,13 @@
   </div>
 
   <script src="js/addresses.js"></script>
+  <script src="js/crypto.js"></script>
   <script src="js/puzzle-data.js"></script>
   <script src="js/price.js"></script>
   <script src="js/modal.js"></script>
   <script src="js/ledger.js"></script>
+  <script src="js/cracker.js"></script>
+  <script src="js/home.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
