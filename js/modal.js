@@ -17,7 +17,7 @@
     if(it.state === 'retired') return 'The creator swept this puzzle on 11 July 2017 and moved the funds into the lower puzzles. There is nothing left to win here.';
     if(it.state === 'solved') return 'Solved and swept on ' + it.solveDate + '.' + (it.publicKey ? ' Its public key had been exposed in 2019, which made it reachable with Pollard’s kangaroo.' : '');
     return it.publicKey
-      ? 'Still open. The creator exposed this puzzle’s public key in 2019, so it can be attacked with Pollard’s kangaroo (about 2^' + Math.ceil(it.n/2) + ' operations) instead of address-only brute force.'
+      ? 'Still open. The creator exposed this puzzle’s public key in 2019, so it can be attacked with Pollard’s kangaroo (about 2^' + Math.floor(it.n/2) + ' operations) instead of address-only brute force.'
       : 'Still open. Only the address is known, so a solver must brute-force the private-key interval and hash every candidate.';
   }
   function usdLine(it){

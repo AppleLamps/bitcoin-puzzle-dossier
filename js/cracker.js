@@ -57,7 +57,7 @@
     el.target.textContent = it.address; el.target.href = 'https://mempool.space/address/' + it.address;
     el.range.textContent = '0x' + r.start + ' → 0x' + r.end;
     el.space.textContent = fmtBig(size) + ' keys (2^' + (n-1) + ')';
-    var st = it.state === 'open' ? '<span class="state state-open">OPEN</span> ' + it.balance + ' BTC on the line' + (it.publicKey ? ' · public key exposed, kangaroo would need ~2^' + Math.ceil((n+1)/2) + ' ops' : '')
+    var st = it.state === 'open' ? '<span class="state state-open">OPEN</span> ' + it.balance + ' BTC on the line' + (it.publicKey ? ' · public key exposed, kangaroo would need ~2^' + Math.floor(n/2) + ' ops' : '')
            : it.state === 'solved' ? '<span class="state state-solved">SOLVED</span> swept ' + it.solveDate + ' · holds nothing, good for proving the engine'
            : '<span class="state state-preused">PRE-USED</span> not a true puzzle';
     el.lotstate.innerHTML = st;

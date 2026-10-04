@@ -212,7 +212,8 @@ details[open] summary::after{content:"−"}
 /* ---- Clickable ledger rows ---- */
 .ledger-row{cursor:pointer;transition:background .12s}
 .ledger-row:hover,.ledger-row:focus-visible{background:var(--panel);outline:none}
-.ledger-row:focus-visible{box-shadow:inset 3px 0 0 var(--accent)}
+.ledger-open{cursor:pointer;border:0;background:transparent;padding:0;font:inherit;color:inherit;text-align:left}
+.ledger-open:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
 .retired-toggle{padding:26px 0;border-bottom:1px solid var(--line);display:grid;gap:10px;justify-items:start}
 .retired-toggle button{cursor:pointer;border:1px solid var(--ink);background:var(--panel);color:var(--ink);padding:11px 16px;border-radius:3px;font:700 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em}
 .retired-toggle button:hover{background:var(--ink);color:var(--paper)}

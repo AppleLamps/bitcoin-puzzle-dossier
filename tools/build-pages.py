@@ -55,11 +55,21 @@ def entry_page(page, path, title, desc, h1_hint):
     s = s.replace('<section id="ledger" class="page-view ledger-page" hidden>', '<section id="ledger" class="page-view ledger-page"%s>' % ('' if page == 'ledger' else ' hidden'))
     s = s.replace('<section id="cracker" class="page-view cracker-page" hidden>', '<section id="cracker" class="page-view cracker-page"%s>' % ('' if page == 'cracker' else ' hidden'))
     s = s.replace('  <script src="/js/addresses.js"></script>', '  <script>window.DEFAULT_PAGE = %s;</script>\n  <script src="/js/addresses.js"></script>' % json.dumps(page))
-    # breadcrumb
-    crumb = json.dumps({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
-        {"@type": "ListItem", "position": 1, "name": "Bitcoin Puzzle Dossier", "item": SITE + "/"},
-        {"@type": "ListItem", "position": 2, "name": h1_hint, "item": SITE + path}]})
-    s = s.replace('  <link rel="stylesheet" href="/css/styles.css" />', '  <script type="application/ld+json">%s</script>\n  <link rel="stylesheet" href="/css/styles.css" />' % crumb)
+    # Replace the landing page's JSON-LD graph with one that describes this URL (no FAQPage: the FAQ is hidden here).
+    graph = [
+        {"@type": "WebSite", "@id": SITE + "/#website", "url": SITE + "/", "name": "Bitcoin Puzzle Dossier", "inLanguage": "en-US", "author": {"@id": SITE + "/#author"}},
+        {"@type": "Person", "@id": SITE + "/#author", "name": "Lamps", "url": "https://x.com/lamps_apple", "sameAs": ["https://x.com/lamps_apple", "https://github.com/AppleLamps"]},
+        {"@type": "WebPage", "@id": SITE + path + "#webpage", "url": SITE + path, "name": title, "description": desc, "isPartOf": {"@id": SITE + "/#website"}, "primaryImageOfPage": SITE + "/og-image.png", "dateModified": TODAY},
+        {"@type": "BreadcrumbList", "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Bitcoin Puzzle Dossier", "item": SITE + "/"},
+            {"@type": "ListItem", "position": 2, "name": h1_hint, "item": SITE + path}]}]
+    if page == 'cracker':
+        graph.append({"@type": "SoftwareApplication", "name": "Bitcoin Puzzle Web Cracker", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any (browser)", "url": SITE + path,
+                      "description": "Brute-force private-key search for any Bitcoin puzzle, running in Web Workers with a self-contained secp256k1 implementation. Nothing leaves the device.",
+                      "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}})
+    ld = json.dumps({"@context": "https://schema.org", "@graph": graph}, ensure_ascii=False)
+    s = re.sub(r'  <script type="application/ld\+json">\n  \{.*?\n  \}\n  </script>\n', '  <script type="application/ld+json">%s</script>\n' % ld.replace('\\', '\\\\'), s, count=1, flags=re.S)
+    assert 'FAQPage' not in s, 'landing JSON-LD still present on ' + path
     os.makedirs(path.strip('/'), exist_ok=True)
     open(path.strip('/') + '/index.html', 'w', encoding='utf-8').write(s)
     return path
@@ -164,7 +174,7 @@ for n in range(1, 257):
         prize_note = 'Balance at the 21 Aug 2026 chain re-read. Spend fast if you find the key: solved puzzle transactions have been front-run in the mempool.'
         h2 = 'How to attempt Bitcoin puzzle #%d' % n
         if pub:
-            body = '<p>The creator published this puzzle’s public key in 2019, which turns the search into a bounded discrete logarithm. Pollard’s kangaroo solves a %d-bit interval in about 2^%d group operations, far fewer than the 2^%d key tests a blind search would need. JeanLucPons’ CUDA Kangaroo is the standard tool; puzzles #130 and #135 were cracked this way by large GPU pools.</p>' % (n, (n + 1) // 2, n - 2)
+            body = '<p>The creator published this puzzle’s public key in 2019, which turns the search into a bounded discrete logarithm. Pollard’s kangaroo solves a %d-bit interval in about 2^%d group operations, far fewer than the 2^%d key tests a blind search would need. JeanLucPons’ CUDA Kangaroo is the standard tool; puzzles #130 and #135 were cracked this way by large GPU pools.</p>' % (n, n // 2, n - 2)
         else:
             body = '<p>Only the address is known, so a solver has to walk the interval: multiply the secp256k1 generator by each candidate key, hash the compressed public key with SHA-256 and RIPEMD-160, and compare with the address’s hash160. On average that is 2^%d tests, about %s. A single high-end GPU running BitCrack or keyhunt manages roughly a billion tests per second.</p>' % (n - 2, '{:.2e}'.format(2 ** (n - 2)))
         actions = '<a class="btn-primary btn-link" href="/cracker/#crack-%d">Try cracking #%d in your browser</a> <a class="btn-secondary btn-link" href="/#attempt">How solvers really attack it</a>' % (n, n)

@@ -105,7 +105,7 @@
             "name": "How much is the Bitcoin puzzle worth?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Each puzzle N holds roughly N/100 BTC after the creator's top-ups: #71 holds 7.1 BTC, #100 holds 10 BTC, #160 holds 16 BTC. The unsolved pool is 903.01667813 BTC; the USD figure at the top of this page is computed from a live price."
+              "text": "Each unsolved puzzle N holds roughly N/100 BTC after the creator's top-ups: #71 holds 7.1 BTC, #101 holds 10.1 BTC, #160 holds 16 BTC. Solved puzzles hold nothing. The unsolved pool is 903.01667813 BTC; the USD figure at the top of this page is computed from a live price."
             }
           },
           {
@@ -271,7 +271,7 @@
           <div class="content">
             <details open><summary>What is the Bitcoin Puzzle Transaction?</summary><div class="detail-body"><p>A transaction broadcast on 15 January 2015 that funded 256 addresses with 32.896 BTC in total. The private key for puzzle N was chosen from the interval [2^(N−1), 2^N), so each puzzle is exactly one bit harder than the last. The creator later retired puzzles 161 to 256, leaving 160 that can be solved.</p></div></details>
             <details><summary>How many Bitcoin puzzles are still unsolved?</summary><div class="detail-body"><p>77 puzzles, #71 through #160, remain unsolved. Together they hold about 903 BTC. The most recent solve was puzzle #135 on 28 July 2026.</p></div></details>
-            <details><summary>How much is the Bitcoin puzzle worth?</summary><div class="detail-body"><p>Each puzzle N holds roughly N/100 BTC after the creator's top-ups: #71 holds 7.1 BTC, #100 holds 10 BTC, #160 holds 16 BTC. The unsolved pool is 903.01667813 BTC; the USD figure at the top of this page is computed from a live price.</p></div></details>
+            <details><summary>How much is the Bitcoin puzzle worth?</summary><div class="detail-body"><p>Each unsolved puzzle N holds roughly N/100 BTC after the creator's top-ups: #71 holds 7.1 BTC, #101 holds 10.1 BTC, #160 holds 16 BTC. Solved puzzles hold nothing. The unsolved pool is 903.01667813 BTC; the USD figure at the top of this page is computed from a live price.</p></div></details>
             <details><summary>What is Bitcoin puzzle 71?</summary><div class="detail-body"><p>Puzzle #71 is the cheapest unsolved puzzle. Its address is 1PWo3JeB9jrGwfHDNpdGK54CRas7fsVzXU, its private key lies between 2^70 and 2^71, and it holds 7.1 BTC. Only the address is known, so it needs brute force over about 1.18 sextillion keys.</p></div></details>
             <details><summary>How do you attempt a Bitcoin puzzle?</summary><div class="detail-body"><p>Enumerate private keys in the puzzle's interval, derive each compressed public key on secp256k1, hash it with SHA-256 then RIPEMD-160, and compare with the address. Puzzles whose public key was revealed (#140, #145, #150, #155, #160) can instead be attacked with Pollard's kangaroo, which needs roughly the square root of the work. The web cracker on this site runs the brute-force method in your browser.</p></div></details>
             <details><summary>Was the 1000 BTC Bitcoin puzzle real?</summary><div class="detail-body"><p>The &quot;1000 BTC&quot; figure is a myth. The original transaction distributed 32.896 BTC. Later top-ups by the creator raised the per-puzzle prizes to N/100 BTC, and a 2023 deposit added 872.2 BTC across the unsolved addresses, which is where the larger totals come from.</p></div></details>
