@@ -1,13 +1,17 @@
 // Page wiring: section rail highlighting, case-file / ledger tab switching, landing bounty tile.
 (function(){
+  var railHandler = null;
   function initRail(){
+    if(railHandler){ window.removeEventListener('scroll', railHandler); railHandler = null; }
     var links = [].slice.call(document.querySelectorAll('.page-view:not([hidden]) .rail a'));
     var sections = links.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+    if(!links.length || !sections.length) return; // pages without a section rail (the ledger) have nothing to track
     function mark(){
       var y = window.scrollY + 120, current = sections[0];
       sections.forEach(function(s){ if(s.offsetTop <= y) current = s; });
       links.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === '#' + current.id); });
     }
+    railHandler = mark;
     window.addEventListener('scroll', mark, {passive:true}); mark();
   }
   var pages = ['home','dossier','ledger'];

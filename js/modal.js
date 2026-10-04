@@ -1,6 +1,16 @@
 // Puzzle detail modal. PuzzleModal.open(n) renders everything known about lot n.
 (function(){
-  var modal, body, card, lastFocus;
+  var modal, body, card, lastFocus, shell;
+  var FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+  function trapTab(e){
+    if(e.key !== 'Tab' || modal.hidden) return;
+    var items = [].slice.call(card.querySelectorAll(FOCUSABLE)).filter(function(n){ return n.offsetParent !== null; });
+    if(!items.length){ e.preventDefault(); card.focus(); return; }
+    var first = items[0], last = items[items.length-1], active = document.activeElement;
+    if(e.shiftKey && (active === first || active === card)){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && active === last){ e.preventDefault(); first.focus(); }
+    else if(!card.contains(active)){ e.preventDefault(); first.focus(); }
+  }
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function stateText(it){
     if(it.state === 'preused') return 'Lots #1 and #2 were already in use before the puzzle was funded, so their emptying is not counted as a solve.';
@@ -50,20 +60,23 @@
     body.innerHTML = render(it);
     modal.hidden = false;
     document.body.classList.add('modal-open');
+    if(shell){ shell.inert = true; shell.setAttribute('aria-hidden', 'true'); }
     card.focus();
   }
   function close(){
     if(modal.hidden) return;
     modal.hidden = true;
     document.body.classList.remove('modal-open');
+    if(shell){ shell.inert = false; shell.removeAttribute('aria-hidden'); }
     if(lastFocus && lastFocus.focus) lastFocus.focus();
   }
   document.addEventListener('DOMContentLoaded', function(){
     modal = document.getElementById('puzzleModal');
     body = document.getElementById('modalBody');
     card = modal.querySelector('.modal-card');
+    shell = document.querySelector('.shell');
     modal.addEventListener('click', function(e){ if(e.target.closest('[data-modal-close]')) close(); });
-    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') close(); });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') close(); else trapTab(e); });
   });
   window.PuzzleModal = { open:open, close:close };
 }());

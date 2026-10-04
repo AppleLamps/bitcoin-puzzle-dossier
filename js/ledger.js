@@ -28,7 +28,7 @@
     var numeric = /^\d+$/.test(raw) ? Number(raw) : null;
     var matched = allItems().filter(function(it){ return matches(it, raw, numeric, f); });
     // Retired lots stay hidden unless the user opens them, searches for one directly, or filters to them.
-    var reveal = showRetired || f === 'retired' || numeric !== null || (raw && f !== 'all');
+    var reveal = showRetired || f === 'retired' || raw !== '';
     var hiddenRetired = reveal ? [] : matched.filter(function(it){ return it.state === 'retired'; });
     var visible = reveal ? matched : matched.filter(function(it){ return it.state !== 'retired'; });
     rows.innerHTML = visible.map(rowHtml).join('');

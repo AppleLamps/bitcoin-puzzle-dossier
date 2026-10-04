@@ -32,18 +32,27 @@
   }
   function odds(){
     var rows = [71,72,73,74,76,80,90,100,110,120,140,160].filter(function(n){ return D.puzzleState(n) === 'open'; });
-    var gpu = 1e9;
-    var html = '<div class="odds-row odds-head"><div>LOT</div><div>EXPECTED TESTS</div><div>AT 1 B keys/s</div><div>PRIZE</div><div>METHOD</div></div>';
+    var rate = 1e9; // one billion key tests (brute force) or group operations (kangaroo) per second
+    function duration(secs){ return secs < 86400 ? (secs/3600).toFixed(1) + ' hours' : secs < 3.15e7 ? (secs/86400).toFixed(0) + ' days' : secs < 3.15e10 ? fmt(Math.round(secs/3.15e7)) + ' years' : (secs/3.15e7).toExponential(1) + ' years'; }
+    var html = '<div class="odds-row odds-head"><div>LOT</div><div>EXPECTED WORK</div><div>AT 1 B ops/s</div><div>PRIZE</div><div>METHOD</div></div>';
     rows.forEach(function(n){
-      var expected = Math.pow(2, n-2);
-      var secs = expected / gpu;
-      var t = secs < 86400 ? (secs/3600).toFixed(1) + ' hours' : secs < 3.15e7 ? (secs/86400).toFixed(0) + ' days' : secs < 3.15e10 ? fmt(Math.round(secs/3.15e7)) + ' years' : (secs/3.15e7).toExponential(1) + ' years';
       var pk = D.hasPublicKey(n);
-      html += '<div class="odds-row" data-lot="' + n + '"><div class="ledger-num">#' + n + '</div><div class="mono">2^' + (n-2) + ' ≈ ' + expected.toExponential(2) + '</div><div>' + t + '</div><div class="mono">' + D.balanceFor(n) + ' BTC</div><div>' + (pk ? 'Kangaroo · ~2^' + Math.ceil(n/2) + ' ops' : 'Brute force') + '</div></div>';
+      // Brute force: half the interval on average, 2^(n-2) key tests.
+      // Kangaroo on a known public key: about 2*sqrt(2^(n-1)) group operations, i.e. 2^((n+1)/2).
+      var exp = pk ? (n + 1) / 2 : n - 2;
+      var expected = Math.pow(2, exp);
+      var expLabel = pk ? '2^' + exp.toFixed(1).replace(/\.0$/, '') : '2^' + exp;
+      html += '<div class="odds-row" data-lot="' + n + '" role="button" tabindex="0" aria-label="Open details for lot ' + n + '"><div class="ledger-num">#' + n + '</div><div class="mono">' + expLabel + ' ≈ ' + expected.toExponential(2) + (pk ? ' ops' : ' keys') + '</div><div>' + duration(expected / rate) + '</div><div class="mono">' + D.balanceFor(n) + ' BTC</div><div>' + (pk ? 'Kangaroo · public key known' : 'Brute force · address only') + '</div></div>';
     });
     var el = document.getElementById('oddsTable');
     el.innerHTML = html;
-    el.addEventListener('click', function(e){ var r = e.target.closest('.odds-row[data-lot]'); if(r) window.PuzzleModal.open(Number(r.dataset.lot)); });
+    function activate(e){
+      var r = e.target.closest('.odds-row[data-lot]'); if(!r) return;
+      if(e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault(); window.PuzzleModal.open(Number(r.dataset.lot));
+    }
+    el.addEventListener('click', activate);
+    el.addEventListener('keydown', activate);
   }
   document.addEventListener('DOMContentLoaded', function(){
     if(!document.getElementById('home')) return;
