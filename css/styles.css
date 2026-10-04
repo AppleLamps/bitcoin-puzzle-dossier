@@ -274,9 +274,10 @@ body.modal-open{overflow:hidden}
 .cracker-status.bad{background:var(--accent-soft);color:var(--accent)}
 .cracker-progress{height:6px;background:var(--paper-2);margin-top:12px;overflow:hidden}
 .cracker-bar{height:100%;width:0;background:var(--accent);transition:width .3s}
-.cracker-stats{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:16px}
-.cracker-stats div{background:var(--paper);padding:12px 10px;min-width:0}
-.cracker-stats b{display:block;font:500 18px/1.1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ink);overflow-wrap:anywhere}
+.cracker-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-top:16px}
+.cracker-stats div{background:var(--paper);padding:14px 14px 12px;min-width:0}
+.cracker-stats b{display:block;font:500 22px/1.1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.cracker-stats b.wrap{white-space:normal;font-size:15px;line-height:1.3}
 .cracker-stats b.small{font-size:11px}
 .cracker-stats span{display:block;margin-top:6px;font:10px/1.3 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);letter-spacing:.04em}
 .cracker-result{margin-top:20px;border-top:4px solid var(--proof);background:var(--paper);padding:20px 22px}
@@ -290,7 +291,7 @@ body.modal-open{overflow:hidden}
 @media(max-width:800px){
   .how-grid{grid-template-columns:1fr}
   .cracker{padding:20px 16px}.cracker-controls{grid-template-columns:1fr}
-  .cracker-stats{grid-template-columns:repeat(3,1fr)}
+  .cracker-stats{grid-template-columns:repeat(2,1fr)}
   .cracker-facts{grid-template-columns:1fr;gap:2px 0}.cracker-facts dt{margin-top:8px}
   .odds-row{grid-template-columns:50px 1fr;gap:6px 12px}.odds-head{display:none}
 }
