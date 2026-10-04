@@ -4,14 +4,112 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="color-scheme" content="light dark" />
-  <link rel="icon" href="data:," />
-  <title>Who Created the 2015 Bitcoin Puzzle</title>
+  <title>Bitcoin Puzzle Transaction: Live Prize Pool, Solve Tracker, Web Cracker and Creator Dossier</title>
+  <meta name="description" content="The 2015 Bitcoin Puzzle Transaction explained: 160 solvable lots, 77 still unsolved worth 903 BTC, how to attempt them, a brute-force cracker that runs in your browser, a full address ledger with key ranges, and a sourced investigation into who created it." />
+  <meta name="keywords" content="bitcoin puzzle, bitcoin puzzle transaction, 2015 bitcoin puzzle, puzzle 71, puzzle 135, puzzle 140, private key puzzle, brute force bitcoin, pollard kangaroo, secp256k1, saatoshi_rising, 32.896 BTC, bitcoin puzzle solver, bitcoin puzzle ledger, unsolved bitcoin puzzles" />
+  <meta name="author" content="Lamps (@lamps_apple)" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#f3f1eb" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#111210" media="(prefers-color-scheme: dark)" />
+  <link rel="canonical" href="https://bitcoin-puzzle-dossier.vercel.app/" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="og-image.png" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Bitcoin Puzzle Dossier" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://bitcoin-puzzle-dossier.vercel.app/" />
+  <meta property="og:title" content="The Bitcoin Puzzle: 77 unsolved lots, 903 BTC, and a cracker in your browser" />
+  <meta property="og:description" content="Live USD prize pool, solve tracker for all 160 lots, how brute force and kangaroo attacks work, an in-browser secp256k1 cracker, and a sourced dossier on who created the 2015 puzzle transaction." />
+  <meta property="og:image" content="https://bitcoin-puzzle-dossier.vercel.app/og-image.png" />
+  <meta property="og:image:secure_url" content="https://bitcoin-puzzle-dossier.vercel.app/og-image.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Bitcoin Puzzle Dossier: 160 locks, one doubling key. 77 lots unsolved, 903 BTC remaining." />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@lamps_apple" />
+  <meta name="twitter:creator" content="@lamps_apple" />
+  <meta name="twitter:title" content="The Bitcoin Puzzle: 77 unsolved lots, 903 BTC, and a cracker in your browser" />
+  <meta name="twitter:description" content="Live USD prize pool, solve tracker for all 160 lots, how brute force and kangaroo attacks work, an in-browser secp256k1 cracker, and a sourced dossier on who created the 2015 puzzle transaction." />
+  <meta name="twitter:image" content="https://bitcoin-puzzle-dossier.vercel.app/og-image.png" />
+  <meta name="twitter:image:alt" content="Bitcoin Puzzle Dossier: 160 locks, one doubling key. 77 lots unsolved, 903 BTC remaining." />
+  <meta name="twitter:label1" content="Unsolved lots" />
+  <meta name="twitter:data1" content="77 of 160" />
+  <meta name="twitter:label2" content="Remaining prize" />
+  <meta name="twitter:data2" content="903.01667813 BTC" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://bitcoin-puzzle-dossier.vercel.app/#website",
+        "url": "https://bitcoin-puzzle-dossier.vercel.app/",
+        "name": "Bitcoin Puzzle Dossier",
+        "description": "Solve tracker, live prize pool, in-browser cracker and creator investigation for the 2015 Bitcoin Puzzle Transaction.",
+        "inLanguage": "en-US",
+        "author": { "@id": "https://bitcoin-puzzle-dossier.vercel.app/#author" }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://bitcoin-puzzle-dossier.vercel.app/#author",
+        "name": "Lamps",
+        "url": "https://x.com/lamps_apple",
+        "sameAs": ["https://x.com/lamps_apple", "https://github.com/AppleLamps"]
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://bitcoin-puzzle-dossier.vercel.app/#webpage",
+        "url": "https://bitcoin-puzzle-dossier.vercel.app/",
+        "name": "Bitcoin Puzzle Transaction: Live Prize Pool, Solve Tracker, Web Cracker and Creator Dossier",
+        "isPartOf": { "@id": "https://bitcoin-puzzle-dossier.vercel.app/#website" },
+        "primaryImageOfPage": "https://bitcoin-puzzle-dossier.vercel.app/og-image.png",
+        "datePublished": "2026-10-03",
+        "dateModified": "2026-10-04",
+        "about": { "@type": "Thing", "name": "Bitcoin Puzzle Transaction", "sameAs": "https://bitcointalk.org/index.php?topic=1306983.0" }
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "Bitcoin Puzzle Web Cracker",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Any (browser)",
+        "url": "https://bitcoin-puzzle-dossier.vercel.app/#cracker",
+        "description": "Brute-force private-key search for any Bitcoin puzzle lot, running in Web Workers with a self-contained secp256k1 implementation. Nothing leaves the device.",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          { "@type": "Question", "name": "What is the Bitcoin Puzzle Transaction?", "acceptedAnswer": { "@type": "Answer", "text": "A January 2015 transaction that funded 256 addresses whose private keys each sit in a known interval [2^(N-1), 2^N). Lot N holds N/100 BTC. Lots 161 to 256 were retired by the creator in 2017, leaving 160 solvable lots." } },
+          { "@type": "Question", "name": "How many Bitcoin puzzles are still unsolved?", "acceptedAnswer": { "@type": "Answer", "text": "77 lots, #71 through #160, are unsolved and together hold about 903 BTC. The most recent solve was #135 in July 2026." } },
+          { "@type": "Question", "name": "How do you attempt a Bitcoin puzzle?", "acceptedAnswer": { "@type": "Answer", "text": "Enumerate private keys in the lot's interval, derive each compressed public key on secp256k1, hash it with SHA-256 then RIPEMD-160, and compare to the address. Lots with an exposed public key can instead be attacked with Pollard's kangaroo, which needs roughly the square root of the work." } },
+          { "@type": "Question", "name": "Who created the Bitcoin puzzle?", "acceptedAnswer": { "@type": "Answer", "text": "Unknown. The pseudonymous BitcoinTalk account saatoshi_rising demonstrated control of the puzzle keys in 2017 and is the strongest claimant, but no real-world identity has been established." } }
+        ]
+      }
+    ]
+  }
+  </script>
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
   <div class="shell">
     <div class="topline">
       <div class="stamp">INVESTIGATIVE DOSSIER · RESEARCHED 03 OCT 2026</div>
+      <div class="topline-links">
+        <a class="x-link" href="https://x.com/lamps_apple" target="_blank" rel="me noopener" aria-label="Lamps on X">
+          <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          @lamps_apple
+        </a>
+        <button type="button" class="donate" id="donateButton" title="Copy BTC donation address" aria-label="Copy BTC donation address bc1qs4utkvxmk98udzl9gheusmhnms3hn090gaav7t">
+          <span class="donate-label">TIP BTC</span>
+          <span class="donate-addr" id="donateAddr">bc1qs4utkvxmk98udzl9gheusmhnms3hn090gaav7t</span>
+          <span class="donate-short" aria-hidden="true">bc1qs4u…aav7t</span>
+          <span class="donate-copied" id="donateCopied" aria-live="polite"></span>
+        </button>
+      </div>
       <nav class="page-tabs" aria-label="Pages">
         <a href="#home" data-page-link="home">The puzzle</a>
         <a href="#dossier" data-page-link="dossier">Case file</a>
@@ -357,6 +455,7 @@
   <script src="js/ledger.js"></script>
   <script src="js/cracker.js"></script>
   <script src="js/home.js"></script>
+  <script src="js/donate.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

@@ -15,7 +15,11 @@ Landing page on the 2015 Bitcoin Puzzle Transaction (solve count, live USD prize
 - `js/price.js` – live BTC/USD price (CoinGecko, then mempool.space as fallback)
 - `js/modal.js` – per-puzzle detail popup
 - `js/ledger.js` – ledger table, filters, collapsed retired lots (#161–256), clickable rows
-- `js/app.js` – page wiring: tabs, section rail, landing bounty tile
+- `js/app.js` – page wiring: tabs, section rail
+- `js/donate.js` – copy-to-clipboard for the BTC tip address in the header
+- `og-image.png`, `favicon.svg`, `robots.txt`, `sitemap.xml` – social card, icon, crawler files
+
+SEO: `index.html` carries full Open Graph and Twitter `summary_large_image` tags plus JSON-LD (WebSite, Person, WebPage, SoftwareApplication, FAQPage). The canonical URL is set to `https://bitcoin-puzzle-dossier.vercel.app/`; change it in the `<head>`, `robots.txt` and `sitemap.xml` if the site moves to a custom domain.
 
 The web cracker runs entirely on the visitor's device and never sends keys anywhere. On already-solved lots (#1–#25 or so) it finds the real private key in seconds, which is the easiest way to confirm the engine is genuine.
 
