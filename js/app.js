@@ -14,12 +14,12 @@
     railHandler = mark;
     window.addEventListener('scroll', mark, {passive:true}); mark();
   }
-  var pages = ['home','dossier','ledger'];
+  var pages = ['home','dossier','ledger','cracker'];
   var sectionOwner = {};
   function pageFor(hash){
     var id = (hash || '').replace(/^#/, '');
     if(pages.indexOf(id) !== -1) return id;
-    if(/^crack-\d+$/.test(id)) return 'home';
+    if(/^crack-\d+$/.test(id)) return 'cracker';
     return sectionOwner[id] || 'home';
   }
   function syncPage(){

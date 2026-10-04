@@ -4,12 +4,12 @@ Landing page on the 2015 Bitcoin Puzzle Transaction (solve count, live USD prize
 
 ## Layout
 
-- `index.html` – page markup (puzzle landing page, case file, puzzle ledger)
+- `index.html` – page markup (puzzle landing page, case file, puzzle ledger, web cracker)
 - `css/styles.css` – all styling, light and dark
 - `js/addresses.js` – the 256 puzzle addresses, in lot order
 - `js/crypto.js` – self-contained SHA-256, RIPEMD-160, secp256k1 and Base58Check (shared by page and worker)
-- `js/cracker-worker.js` – Web Worker that walks a key interval, batched EC point addition, reports a hit
-- `js/cracker.js` – cracker UI: puzzle picker, strategy, one worker per core, live stats, result card
+- `js/cracker-worker.js` – Web Worker that walks a key interval with batched EC point addition; reports hits, progress, benchmark results and per-lane positions on stop
+- `js/cracker.js` – cracker tab: grouped puzzle picker with quick picks, strategy, thread count, 3-second benchmark, stop/resume that keeps every thread's position, live stats and per-thread view, event log, verified result card with copy buttons
 - `js/home.js` – landing page stats, prize pool, odds table
 - `js/puzzle-data.js` – solve dates, open balances, key-range math, lot state helpers
 - `js/price.js` – live BTC/USD price (CoinGecko, then mempool.space as fallback)
