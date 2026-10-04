@@ -1,26 +1,62 @@
-# Who Created the 2015 Bitcoin Puzzle?
+# Bitcoin Puzzle Dossier
 
-Landing page on the 2015 Bitcoin Puzzle Transaction (solve count, live USD prize pool, how to attempt it, and an in-browser brute-force cracker), a sourced investigative dossier on the creator, and a full ledger of all 256 puzzle addresses with key ranges and solve status.
+A research-driven, browser-based companion to the 2015 Bitcoin Puzzle Transaction. This project brings together the historical context, live solve status, full ledger of all 256 puzzle addresses, and a locally running brute-force cracker that verifies candidate keys without sending anything off-device.
 
-## Layout
+## Overview
 
-- `index.html` – page markup (puzzle landing page, case file, puzzle ledger, web cracker)
-- `css/styles.css` – all styling, light and dark
-- `js/addresses.js` – the 256 puzzle addresses, in lot order
-- `js/crypto.js` – self-contained SHA-256, RIPEMD-160, secp256k1 and Base58Check (shared by page and worker)
-- `js/cracker-worker.js` – Web Worker that walks a key interval with batched EC point addition; reports hits, progress, benchmark results and per-lane positions on stop
-- `js/cracker.js` – cracker tab: grouped puzzle picker with quick picks, strategy, thread count, 3-second benchmark, stop/resume that keeps every thread's position, live stats and per-thread view, event log, verified result card with copy buttons
-- `js/home.js` – landing page stats, prize pool, odds table
-- `js/puzzle-data.js` – solve dates, open balances, key-range math, lot state helpers
-- `js/price.js` – live BTC/USD price (CoinGecko, then mempool.space as fallback)
-- `js/modal.js` – per-puzzle detail popup
-- `js/ledger.js` – ledger table, filters, collapsed retired lots (#161–256), clickable rows
-- `js/app.js` – page wiring: tabs, section rail
-- `js/donate.js` – copy-to-clipboard for the BTC tip address in the header
-- `og-image.png`, `favicon.svg`, `robots.txt`, `sitemap.xml` – social card, icon, crawler files
+The 2015 Bitcoin Puzzle Transaction remains one of the most recognizable private-key puzzles in Bitcoin history. This site presents:
 
-SEO: `index.html` carries full Open Graph and Twitter `summary_large_image` tags plus JSON-LD (WebSite, Person, WebPage, SoftwareApplication, FAQPage). The canonical URL is set to `https://bitcoin-puzzle-dossier.vercel.app/`; change it in the `<head>`, `robots.txt` and `sitemap.xml` if the site moves to a custom domain.
+- the puzzle mechanics and how each lot’s keyspace is defined
+- live solve tracking and the current prize pool
+- the complete ledger of all puzzle addresses and key ranges
+- a sourced dossier investigating the likely creator and historical evidence
+- a browser-based solver that can test keys locally in the visitor’s own browser
 
-The web cracker runs entirely on the visitor's device and never sends keys anywhere. On already-solved lots (#1–#25 or so) it finds the real private key in seconds, which is the easiest way to confirm the engine is genuine.
+## Key features
 
-No build step. Serve the folder statically (for example `python3 -m http.server`). Built with Muse. Deploy on Vercel by importing this repo (framework preset: Other, no build command, output directory: root).
+- Live BTC/USD prize pool and unsolved-lot tracking
+- Full 256-address ledger with filters, lot metadata, and clickable rows
+- Dedicated case-file section covering the creator investigation and leading theories
+- In-browser cryptographic engine using a self-contained secp256k1 implementation
+- Privacy-preserving operation: the web cracker runs entirely on the user’s device
+
+## Project structure
+
+- `index.html` – application shell, page sections, and SEO metadata
+- `css/styles.css` – all styling, including light and dark themes
+- `js/addresses.js` – the 256 puzzle addresses in lot order
+- `js/crypto.js` – self-contained SHA-256, RIPEMD-160, secp256k1, and Base58Check logic used by the app and worker
+- `js/cracker-worker.js` – worker that iterates key intervals and reports progress and hits
+- `js/cracker.js` – interactive cracking UI with strategy controls, stats, event logging, and result verification
+- `js/home.js` – landing-page stats, odds table, and prize-pool logic
+- `js/puzzle-data.js` – key-range math, lot state helpers, and solve metadata
+- `js/price.js` – live BTC/USD pricing with fallback providers
+- `js/modal.js` – per-lot detail popup
+- `js/ledger.js` – ledger table, filters, and collapsed retired-lot handling
+- `js/app.js` – tab navigation and page wiring
+- `js/donate.js` – copy-to-clipboard donation action
+- `og-image.png`, `favicon.svg`, `robots.txt`, `sitemap.xml` – static assets and SEO files
+
+## Local development
+
+This project is a static site with no build pipeline.
+
+1. Clone the repository.
+2. From the project root, serve the files locally:
+
+   `python3 -m http.server 8000`
+
+3. Open `http://localhost:8000/` in a browser.
+
+The web cracker performs all key generation and validation locally; it does not transmit keys to any backend.
+
+## Deployment
+
+This site can be deployed as a static application.
+
+- Vercel: import the repository, select the framework preset `Other`, leave the build command blank, and set the output directory to the project root.
+- If you move the site to a custom domain, update the canonical URL, `robots.txt`, and `sitemap.xml` to match the new host.
+
+## Notes
+
+The web cracker is designed to be trustworthy and transparent. On already-solved lots, it can usually recover the real private key within seconds, which provides a straightforward check that the implementation is working as expected.
