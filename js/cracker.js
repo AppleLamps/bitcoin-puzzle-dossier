@@ -22,7 +22,9 @@
     if(secs < 3600) return Math.floor(secs/60) + ' min ' + Math.round(secs%60) + ' s';
     if(secs < 86400) return (secs/3600).toFixed(1) + ' h';
     if(secs < 3.15e7) return (secs/86400).toFixed(1) + ' days';
-    return fmtCompact(Math.round(secs/3.15e7)) + ' years';
+    var years = secs / 3.15e7;
+    // Compact notation stops at trillions, so beyond that fall back to exponential.
+    return (years < 1e15 ? fmtCompact(Math.round(years)) : years.toExponential(2)) + ' years';
   }
   function log(msg, cls){
     var li = document.createElement('li');
