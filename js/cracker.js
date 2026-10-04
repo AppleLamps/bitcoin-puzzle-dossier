@@ -77,9 +77,11 @@
   function elapsed(){ return pausedElapsed + (running ? (Date.now() - startedAt) / 1000 : 0); }
   function tick(){
     var t = totalChecked(), secs = elapsed();
-    el.checked.textContent = fmtCompact(t); el.checked.title = t.toLocaleString('en-US') + ' keys';
+    el.checked.textContent = fmtCompact(t);
+    el.checkedLabel.textContent = Number(t) >= 1e6 ? 'keys checked · exactly ' + t.toLocaleString('en-US') : 'keys checked';
     var rate = secs > 0 ? Number(t) / secs : 0;
-    el.rate.textContent = rate ? fmt(Math.round(rate)) + ' keys/s' : '—';
+    el.rate.textContent = rate ? fmtCompact(Math.round(rate)) : '—';
+    el.rateLabel.textContent = rate ? 'keys per second · ' + fmt(Math.round(rate)) : 'keys per second';
     el.elapsed.textContent = dur(secs);
     if(current){
       var size = Number(BigInt(D.keyspaceSize(current.n)));
@@ -264,7 +266,7 @@
     return false;
   }
   document.addEventListener('DOMContentLoaded', function(){
-    ['puzzle','mode','custom','customWrap','threads','quick','start','stop','resume','bench','status','target','lotstate','range','space','eta','checked','rate','elapsed','remaining','remainingLabel','workers','pct','pctlabel','progress','progressbar','threadlist','result','resultBody','log'].forEach(function(k){ el[k] = $('crk-' + k); });
+    ['puzzle','mode','custom','customWrap','threads','quick','start','stop','resume','bench','status','target','lotstate','range','space','eta','checked','checkedLabel','rate','rateLabel','elapsed','remaining','remainingLabel','workers','pct','pctlabel','progress','progressbar','threadlist','result','resultBody','log'].forEach(function(k){ el[k] = $('crk-' + k); });
     if(!el.puzzle) return;
     if(typeof Worker === 'undefined' || typeof BigInt === 'undefined'){ setStatus('This browser lacks Web Workers or BigInt; the cracker cannot run here.', 'bad'); el.start.disabled = true; el.bench.disabled = true; return; }
     fillSelects();
