@@ -19,7 +19,7 @@
       '<div class="ledger-range" data-label="KEY RANGE · HEX">' + D.rangeFor(item.n) + '</div>' +
       '<div class="ledger-original" data-label="BALANCE*">' + item.balance + ' BTC<small>original ' + item.original + '</small></div>' +
       '<div data-label="STATUS"><span class="state state-' + item.state + '">' + D.labels[item.state] + '</span></div>' +
-      '<div class="ledger-record" data-label="RECORD">' + item.record + '</div>' +
+      '<div class="ledger-record" data-label="RECORD">' + item.record + ' · <a class="source-link ledger-page-link" href="/puzzle/' + item.n + '/" data-stop>page</a></div>' +
     '</article>';
   }
   function render(){
@@ -39,6 +39,7 @@
     rendered = true;
   }
   function onRowActivate(e){
+    if(e.target.closest('a[data-stop]')) return; // let the link navigate
     var row = e.target.closest('.ledger-row');
     if(!row) return;
     if(e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return;
@@ -53,6 +54,7 @@
     empty = document.getElementById('ledgerEmpty');
     toggleWrap = document.getElementById('retiredToggle');
     toggleBtn = document.getElementById('retiredButton');
+    try { var q = new URLSearchParams(location.search).get('q'); if(q) search.value = q; } catch(e){}
     search.addEventListener('input', render);
     filter.addEventListener('change', render);
     toggleBtn.addEventListener('click', function(){ showRetired = true; toggleBtn.setAttribute('aria-expanded', 'true'); render(); });

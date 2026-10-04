@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Bitcoin Puzzle Addresses: All 256 Puzzles with Key Ranges, Balances and Solve Status</title>
+  <meta name="description" content="Every Bitcoin puzzle address from the 2015 transaction with its private-key range in hex, current balance, solve date and public-key status. Search by puzzle number or address." />
+  <meta name="keywords" content="bitcoin puzzle, bitcoin puzzle transaction, 2015 bitcoin puzzle, 32 btc puzzle, 1000 btc puzzle, bitcoin puzzle 71, bitcoin puzzle 66, bitcoin puzzle 135, bitcoin puzzle 140, bitcoin puzzle addresses, bitcoin puzzle solved, bitcoin puzzle unsolved, bitcoin puzzle prize, private key puzzle, brute force bitcoin, pollard kangaroo, secp256k1, saatoshi_rising, 32.896 BTC, bitcoin puzzle solver, bitcoin puzzle ledger, unsolved bitcoin puzzles" />
+  <meta name="author" content="Lamps (@lamps_apple)" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#f3f1eb" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#111210" media="(prefers-color-scheme: dark)" />
+  <link rel="canonical" href="https://bitcoin-puzzle-dossier.vercel.app/ledger/" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/og-image.png" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Bitcoin Puzzle Dossier" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://bitcoin-puzzle-dossier.vercel.app/ledger/" />
+  <meta property="og:title" content="Bitcoin Puzzle Addresses: All 256 Puzzles with Key Ranges, Balances and Solve Status" />
+  <meta property="og:description" content="Every Bitcoin puzzle address from the 2015 transaction with its private-key range in hex, current balance, solve date and public-key status. Search by puzzle number or address." />
+  <meta property="og:image" content="https://bitcoin-puzzle-dossier.vercel.app/og-image.png" />
+  <meta property="og:image:secure_url" content="https://bitcoin-puzzle-dossier.vercel.app/og-image.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Bitcoin Puzzle Dossier: 160 locks, one doubling key. 77 puzzles unsolved, 903 BTC remaining." />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@lamps_apple" />
+  <meta name="twitter:creator" content="@lamps_apple" />
+  <meta name="twitter:title" content="Bitcoin Puzzle Addresses: All 256 Puzzles with Key Ranges, Balances and Solve Status" />
+  <meta name="twitter:description" content="Every Bitcoin puzzle address from the 2015 transaction with its private-key range in hex, current balance, solve date and public-key status. Search by puzzle number or address." />
+  <meta name="twitter:image" content="https://bitcoin-puzzle-dossier.vercel.app/og-image.png" />
+  <meta name="twitter:image:alt" content="Bitcoin Puzzle Dossier: 160 locks, one doubling key. 77 puzzles unsolved, 903 BTC remaining." />
+  <meta name="twitter:label1" content="Unsolved puzzles" />
+  <meta name="twitter:data1" content="77 of 160" />
+  <meta name="twitter:label2" content="Remaining prize" />
+  <meta name="twitter:data2" content="903.01667813 BTC" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://bitcoin-puzzle-dossier.vercel.app/#website",
+        "url": "https://bitcoin-puzzle-dossier.vercel.app/",
+        "name": "Bitcoin Puzzle Dossier",
+        "description": "Solve tracker, live prize pool, in-browser cracker and creator investigation for the 2015 Bitcoin Puzzle Transaction.",
+        "inLanguage": "en-US",
+        "author": { "@id": "https://bitcoin-puzzle-dossier.vercel.app/#author" },
+        "potentialAction": { "@type": "SearchAction", "target": "https://bitcoin-puzzle-dossier.vercel.app/ledger/?q={search_term_string}", "query-input": "required name=search_term_string" }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://bitcoin-puzzle-dossier.vercel.app/#author",
+        "name": "Lamps",
+        "url": "https://x.com/lamps_apple",
+        "sameAs": ["https://x.com/lamps_apple", "https://github.com/AppleLamps"]
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://bitcoin-puzzle-dossier.vercel.app/#webpage",
+        "url": "https://bitcoin-puzzle-dossier.vercel.app/",
+        "name": "Bitcoin Puzzle Transaction: Live Prize Pool, Solve Tracker, Web Cracker and Creator Dossier",
+        "isPartOf": { "@id": "https://bitcoin-puzzle-dossier.vercel.app/#website" },
+        "primaryImageOfPage": "https://bitcoin-puzzle-dossier.vercel.app/og-image.png",
+        "datePublished": "2026-10-03",
+        "dateModified": "2026-10-04",
+        "about": { "@type": "Thing", "name": "Bitcoin Puzzle Transaction", "sameAs": "https://bitcointalk.org/index.php?topic=1306983.0" }
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "Bitcoin Puzzle Web Cracker",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Any (browser)",
+        "url": "https://bitcoin-puzzle-dossier.vercel.app/#cracker",
+        "description": "Brute-force private-key search for any Bitcoin puzzle, running in Web Workers with a self-contained secp256k1 implementation. Nothing leaves the device.",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is the Bitcoin Puzzle Transaction?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "A transaction broadcast on 15 January 2015 that funded 256 addresses with 32.896 BTC in total. The private key for puzzle N was chosen from the interval [2^(N−1), 2^N), so each puzzle is exactly one bit harder than the last. The creator later retired puzzles 161 to 256, leaving 160 that can be solved."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How many Bitcoin puzzles are still unsolved?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "77 puzzles, #71 through #160, remain unsolved. Together they hold about 903 BTC. The most recent solve was puzzle #135 on 28 July 2026."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How much is the Bitcoin puzzle worth?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Each puzzle N holds roughly N/100 BTC after the creator's top-ups: #71 holds 7.1 BTC, #100 holds 10 BTC, #160 holds 16 BTC. The unsolved pool is 903.01667813 BTC; the USD figure at the top of this page is computed from a live price."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is Bitcoin puzzle 71?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Puzzle #71 is the cheapest unsolved puzzle. Its address is 1PWo3JeB9jrGwfHDNpdGK54CRas7fsVzXU, its private key lies between 2^70 and 2^71, and it holds 7.1 BTC. Only the address is known, so it needs brute force over about 1.18 sextillion keys."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do you attempt a Bitcoin puzzle?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Enumerate private keys in the puzzle's interval, derive each compressed public key on secp256k1, hash it with SHA-256 then RIPEMD-160, and compare with the address. Puzzles whose public key was revealed (#140, #145, #150, #155, #160) can instead be attacked with Pollard's kangaroo, which needs roughly the square root of the work. The web cracker on this site runs the brute-force method in your browser."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Was the 1000 BTC Bitcoin puzzle real?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The \"1000 BTC\" figure is a myth. The original transaction distributed 32.896 BTC. Later top-ups by the creator raised the per-puzzle prizes to N/100 BTC, and a 2023 deposit added 872.2 BTC across the unsolved addresses, which is where the larger totals come from."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Who created the Bitcoin puzzle?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Unknown. The pseudonymous BitcoinTalk account saatoshi_rising demonstrated control of the puzzle keys in 2017 and is the strongest claimant, but no real-world identity has been established. The case file on this site traces the evidence."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Which Bitcoin puzzles have been solved recently?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "#135 fell on 28 July 2026, #69 on 30 April 2025, #68 on 6 April 2025, #67 on 21 February 2025, #130 on 23 September 2024 and #66 on 12 September 2024. The ledger lists every solve date."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Bitcoin Puzzle Dossier", "item": "https://bitcoin-puzzle-dossier.vercel.app/"}, {"@type": "ListItem", "position": 2, "name": "Puzzle ledger", "item": "https://bitcoin-puzzle-dossier.vercel.app/ledger/"}]}</script>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <div class="topline">
+      <div class="stamp">INVESTIGATIVE DOSSIER · RESEARCHED 03 OCT 2026</div>
+      <div class="topline-links">
+        <a class="x-link" href="https://x.com/lamps_apple" target="_blank" rel="me noopener" aria-label="Lamps on X">
+          <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          @lamps_apple
+        </a>
+        <button type="button" class="donate" id="donateButton" title="Copy BTC donation address" aria-label="Copy BTC donation address bc1qs4utkvxmk98udzl9gheusmhnms3hn090gaav7t">
+          <span class="donate-label">TIP BTC</span>
+          <span class="donate-addr" id="donateAddr">bc1qs4utkvxmk98udzl9gheusmhnms3hn090gaav7t</span>
+          <span class="donate-short" aria-hidden="true">bc1qs4u…aav7t</span>
+          <span class="donate-copied" id="donateCopied" aria-live="polite"></span>
+        </button>
+      </div>
+      <nav class="page-tabs" aria-label="Pages">
+        <a href="/" data-page-link="home">The puzzle</a>
+        <a href="/case-file/" data-page-link="dossier">Case file</a>
+        <a href="/ledger/" data-page-link="ledger">Puzzle ledger</a>
+        <a href="/cracker/" data-page-link="cracker">Web cracker</a>
+      </nav>
+    </div>
+
+    <section id="home" class="page-view home-page" hidden>
+      <header class="hero">
+        <div>
+          <div class="section-index">THE 2015 BITCOIN PUZZLE TRANSACTION</div>
+          <h1>The Bitcoin Puzzle.<br>160 locks, one doubling key.</h1>
+          <p class="lede">The Bitcoin Puzzle Transaction (sometimes called the 32 BTC puzzle or the 1000 BTC puzzle) began on 15 January 2015 when someone funded 256 addresses whose private keys sit in ever-larger ranges: puzzle N hides inside <strong>[2^(N−1), 2^N)</strong>. Solvers have cracked the easy end. The hard end is still paying.</p>
+        </div>
+        <aside class="verdict">
+          <b>UNSOLVED PRIZE POOL</b>
+          <p class="num" id="bountyUsd">—</p>
+          <p><strong id="bountyBtc">903.01667813 BTC</strong> across <span id="statOpenInline">77</span> open puzzles</p>
+          <small class="bounty-note" id="bountyNote">Fetching live BTC price…</small>
+        </aside>
+      </header>
+
+      <div class="quick" aria-label="Puzzle status">
+        <article><div class="num" id="statSolved">—</div><p>puzzles genuinely solved so far, out of 160 that can be solved</p></article>
+        <article><div class="num" id="statOpen">—</div><p>puzzles still open, #71 up to #160, all funded</p></article>
+        <article><div class="num" id="statLatest">—</div><p id="statLatestNote">most recent solve</p></article>
+        <article><div class="num" id="statNext">—</div><p id="statNextNote">cheapest unsolved puzzle, next in line</p></article>
+      </div>
+
+      <nav class="rail" aria-label="Puzzle sections">
+        <div class="rail-inner">
+          <a href="#how">How it works</a>
+          <a href="#attempt">How to attempt it</a>
+          <a href="#odds">The odds</a>
+          <a href="#try">Try it</a>
+          <a href="#faq">FAQ</a>
+        </div>
+      </nav>
+
+      <main>
+        <section class="section" id="how">
+          <div class="section-head"><div class="section-index">01</div><h2>How the puzzle works</h2><p>One transaction, 256 outputs, a private key per output that lives in a known interval.</p></div>
+          <div class="content">
+            <p>Every puzzle is an ordinary pay-to-pubkey-hash address. What makes it a puzzle is that the private key for puzzle N was chosen from a tiny slice of the 256-bit keyspace: an integer between 2^(N−1) and 2^N − 1. Puzzle 1 has a single candidate. Puzzle 20 has about half a million. Puzzle 71, the cheapest still unsolved, has 1.18 sextillion.</p>
+            <div class="how-grid">
+              <div class="how-card"><b>01 · PICK A PUZZLE</b><p>Choose a puzzle number N. Its address and key range are fixed and public. The ledger tab lists all of them.</p></div>
+              <div class="how-card"><b>02 · ENUMERATE KEYS</b><p>Walk the integers in [2^(N−1), 2^N). For each one, multiply the secp256k1 generator by it to get a public key.</p></div>
+              <div class="how-card"><b>03 · HASH AND COMPARE</b><p>SHA-256 then RIPEMD-160 the compressed public key. If the 20-byte result equals the address’s hash, you hold the key.</p></div>
+              <div class="how-card"><b>04 · SWEEP THE PRIZE</b><p>Import the key into a wallet and move the coins. Do it fast: bots watch the mempool for exactly these spends.</p></div>
+            </div>
+            <p>The creator later topped the prizes up to N/100 BTC per puzzle, swept puzzles 161 to 256 back in 2017, and in 2019 revealed the public keys of every fifth puzzle from 65 to 160. Those public-key puzzles can be attacked with Pollard’s kangaroo, which needs roughly the square root of the work of a blind search. Full background on who did this and why is in the <a href="/case-file/">case file</a>.</p>
+          </div>
+        </section>
+
+        <section class="section" id="attempt">
+          <div class="section-head"><div class="section-index">02</div><h2>How to attempt it</h2><p>What serious solvers actually run, and what each approach costs.</p></div>
+          <div class="content">
+            <p>There is no trick. Every solve so far has been raw computation, so the question is only how many keys per second you can test and how lucky you are.</p>
+            <details open><summary>Address-only puzzles: brute force<span>#71–#160 except every fifth</span></summary><div class="detail-body">
+              <p>You only know the address, so each candidate key needs a full elliptic-curve multiplication plus two hashes. GPU tools such as BitCrack, KeyHunt-Cuda and VanitySearch-style kernels do this at a few hundred million to a few billion keys per second per card. Puzzle 71 needs on average 2^69 tests, about 590 quintillion. At one billion keys per second that is around 18,700 years for one card.</p>
+              <p>Random sampling versus sequential scanning does not change your expected time. It only changes whether you duplicate work with other solvers scanning from the bottom.</p>
+            </div></details>
+            <details><summary>Public-key puzzles: Pollard’s kangaroo<span>#140, #145, #150, #155, #160</span></summary><div class="detail-body">
+              <p>When the public key is known the problem becomes a discrete logarithm in a bounded interval. Kangaroo (JeanLucPons’ CUDA implementation is the standard) solves an N-bit interval in about 2·√(2^N) group operations. Puzzle 140 needs on the order of 2^71 operations, which is why #130 fell in 2024 to a large GPU pool and #135 fell in July 2026. Puzzle 140 is the current frontier; expect it to take a cluster, not a desktop.</p>
+            </div></details>
+            <details><summary>Pools and the front-running problem<span>Why a found key is not yet a prize</span></summary><div class="detail-body">
+              <p>Pools split the interval among contributors and share the reward. Solo or pooled, the dangerous moment is the spend. When your sweep transaction hits the mempool, the public key is revealed, and for puzzles below about 2^125 a well-provisioned bot can derive the private key and replace your transaction with a higher fee before it confirms. Solvers of #66 lost exactly this race in 2024. Broadcast through a private relay or a miner-direct channel, and use a high fee.</p>
+            </div></details>
+            <details><summary>Tools and references<span>Where to start</span></summary><div class="detail-body">
+              <p class="source-links"><a class="source-link" href="https://github.com/JeanLucPons/Kangaroo" target="_blank" rel="noopener">JeanLucPons / Kangaroo ↗</a> · <a class="source-link" href="https://github.com/albertobsd/keyhunt" target="_blank" rel="noopener">albertobsd / keyhunt ↗</a> · <a class="source-link" href="https://github.com/brichard19/BitCrack" target="_blank" rel="noopener">brichard19 / BitCrack ↗</a> · <a class="source-link" href="https://privatekeys.pw/puzzles/bitcoin-puzzle-tx" target="_blank" rel="noopener">privatekeys.pw puzzle tracker ↗</a> · <a class="source-link" href="https://bitcointalk.org/index.php?topic=1306983.0" target="_blank" rel="noopener">BitcoinTalk thread ↗</a></p>
+            </div></details>
+          </div>
+        </section>
+
+        <section class="section" id="odds">
+          <div class="section-head"><div class="section-index">03</div><h2>The odds</h2><p>What the remaining puzzles actually cost to crack.</p></div>
+          <div class="content">
+            <p>Each step up doubles the work. The table shows the expected number of key tests for the next few unsolved puzzles and the time at a billion tests per second, which is a realistic single high-end GPU rate for address-only search.</p>
+            <div class="odds-table" id="oddsTable"></div>
+            <p>Puzzle 71 is within reach of a dedicated farm over years, or a very large pool over months. Puzzle 100 and above are beyond any brute force at today’s hardware. The public-key puzzles are a separate race: #140 is roughly a thousand times harder than #130 was, and #130 took a GPU pool most of a year.</p>
+          </div>
+        </section>
+        <section class="section" id="try">
+          <div class="section-head"><div class="section-index">04</div><h2>Try it yourself</h2><p>A real brute-force engine that runs in your browser. Nothing leaves your device.</p></div>
+          <div class="content">
+            <p>The web cracker derives public keys with its own secp256k1 implementation, hashes them in worker threads, and compares against the target address. On an already-solved puzzle it finds the real private key within seconds, which is how you can tell it is not a toy. On an open puzzle it is honest about the odds.</p>
+            <div class="try-grid">
+              <a class="try-card" href="/cracker/#crack-20"><b>VERIFY THE ENGINE</b><span>Puzzle #20 · solved 2015</span><p>Finds the real key in about a second.</p></a>
+              <a class="try-card" href="/cracker/#crack-71"><b>CHEAPEST OPEN PUZZLE</b><span>Puzzle #71 · 7.1 BTC</span><p>Start where the money is and see the odds.</p></a>
+              <a class="try-card" href="/cracker/#crack-140"><b>KANGAROO FRONTIER</b><span>Puzzle #140 · public key known</span><p>Brute force here is hopeless; the tab explains why.</p></a>
+            </div>
+            <p><a class="btn-primary btn-link" href="/cracker/">Open the web cracker</a></p>
+          </div>
+        </section>
+        <section class="section" id="faq">
+          <div class="section-head"><div class="section-index">05</div><h2>Bitcoin puzzle FAQ</h2><p>Short answers to what people search for.</p></div>
+          <div class="content">
+            <details open><summary>What is the Bitcoin Puzzle Transaction?</summary><div class="detail-body"><p>A transaction broadcast on 15 January 2015 that funded 256 addresses with 32.896 BTC in total. The private key for puzzle N was chosen from the interval [2^(N−1), 2^N), so each puzzle is exactly one bit harder than the last. The creator later retired puzzles 161 to 256, leaving 160 that can be solved.</p></div></details>
+            <details><summary>How many Bitcoin puzzles are still unsolved?</summary><div class="detail-body"><p>77 puzzles, #71 through #160, remain unsolved. Together they hold about 903 BTC. The most recent solve was puzzle #135 on 28 July 2026.</p></div></details>
+            <details><summary>How much is the Bitcoin puzzle worth?</summary><div class="detail-body"><p>Each puzzle N holds roughly N/100 BTC after the creator's top-ups: #71 holds 7.1 BTC, #100 holds 10 BTC, #160 holds 16 BTC. The unsolved pool is 903.01667813 BTC; the USD figure at the top of this page is computed from a live price.</p></div></details>
+            <details><summary>What is Bitcoin puzzle 71?</summary><div class="detail-body"><p>Puzzle #71 is the cheapest unsolved puzzle. Its address is 1PWo3JeB9jrGwfHDNpdGK54CRas7fsVzXU, its private key lies between 2^70 and 2^71, and it holds 7.1 BTC. Only the address is known, so it needs brute force over about 1.18 sextillion keys.</p></div></details>
+            <details><summary>How do you attempt a Bitcoin puzzle?</summary><div class="detail-body"><p>Enumerate private keys in the puzzle's interval, derive each compressed public key on secp256k1, hash it with SHA-256 then RIPEMD-160, and compare with the address. Puzzles whose public key was revealed (#140, #145, #150, #155, #160) can instead be attacked with Pollard's kangaroo, which needs roughly the square root of the work. The web cracker on this site runs the brute-force method in your browser.</p></div></details>
+            <details><summary>Was the 1000 BTC Bitcoin puzzle real?</summary><div class="detail-body"><p>The &quot;1000 BTC&quot; figure is a myth. The original transaction distributed 32.896 BTC. Later top-ups by the creator raised the per-puzzle prizes to N/100 BTC, and a 2023 deposit added 872.2 BTC across the unsolved addresses, which is where the larger totals come from.</p></div></details>
+            <details><summary>Who created the Bitcoin puzzle?</summary><div class="detail-body"><p>Unknown. The pseudonymous BitcoinTalk account saatoshi_rising demonstrated control of the puzzle keys in 2017 and is the strongest claimant, but no real-world identity has been established. The case file on this site traces the evidence.</p></div></details>
+            <details><summary>Which Bitcoin puzzles have been solved recently?</summary><div class="detail-body"><p>#135 fell on 28 July 2026, #69 on 30 April 2025, #68 on 6 April 2025, #67 on 21 February 2025, #130 on 23 September 2024 and #66 on 12 September 2024. The ledger lists every solve date.</p></div></details>
+          </div>
+        </section>
+      </main>
+    </section>
+
+    <div id="dossier" class="page-view" hidden>
+    <header class="hero">
+      <div>
+        <h1>The creator is still unknown.</h1>
+        <p class="lede">But one pseudonymous account is tied to the puzzle by something stronger than a forum claim: <strong>control of the private keys.</strong> The public trail points to an early Bitcoin whale and stops there.</p>
+      </div>
+      <aside class="verdict">
+        <b>BOTTOM LINE</b>
+        <p><span class="tag verified">Verified</span> <span class="mono">saatoshi_rising</span> controlled the puzzle keys in 2017. <span class="tag likely">Likely</span> the account belonged to the original creator. No real-world identity has been established.</p>
+      </aside>
+    </header>
+
+    <div class="quick" aria-label="Case summary">
+      <article><div class="num">256</div><p>outputs in the original January 2015 transaction</p></article>
+      <article><div class="num">32.896</div><p>BTC originally distributed — not roughly 1,000 BTC</p></article>
+      <article><div class="num">1</div><p>post ever attributed to the strongest creator claimant</p></article>
+      <article><div class="num">11 wk</div><p>from the claimant’s promise to the matching on-chain spend</p></article>
+    </div>
+
+    <nav class="rail" aria-label="Dossier sections">
+      <div class="rail-inner">
+        <a href="#corrections">Premise check</a>
+        <a href="#announcement">Announcement</a>
+        <a href="#claimant">Claimant</a>
+        <a href="#funding">Funding trail</a>
+        <a href="#timeline">Timeline</a>
+        <a href="#theories">Theories</a>
+        <a href="#unknowns">Unknowns</a>
+        <a href="#sources">Sources</a>
+      </div>
+    </nav>
+
+    <main>
+      <section class="section" id="corrections">
+        <div class="section-head"><div class="section-index">01 / PREMISE CHECK</div><h2>Three facts change the case</h2><p>What the primary record says before identity theories enter.</p></div>
+        <div class="content">
+          <p>The familiar version of the story begins with a user called “Someone,” a thousand-bitcoin giveaway, and a January 15 announcement. <strong>None of those three details survives the source check.</strong></p>
+          <div class="correction"><div class="mark">1</div><div><h3>“Someone” was a mistranslation, not an account</h3><p>The Russian OP wrote <em>кто-то</em> — “someone” or “somebody” — about whoever launched the transaction. The actual poster was <span class="mono">amaclin</span>, who immediately wrote “it wasn’t me.” <span class="tag verified">Verified</span></p></div></div>
+          <div class="correction"><div class="mark">2</div><div><h3>The first distribution was 32.896 BTC</h3><p>The transaction spent one 32.9 BTC input into 256 outputs worth 0.001 × N BTC, with a 0.004 BTC fee. The roughly 1,000 BTC figure reflects later 2017 and 2023 additions. <span class="tag verified">Verified</span></p></div></div>
+          <div class="correction"><div class="mark">3</div><div><h3>The announcement appeared January 23</h3><p>The funding transaction confirmed January 15, 2015. The earliest public discussion found was the Russian-language Bitcointalk thread posted eight days later. <span class="tag verified">Verified</span></p></div></div>
+        </div>
+      </section>
+
+      <section class="section" id="announcement">
+        <div class="section-head"><div class="section-index">02 / THE ANNOUNCEMENT</div><h2>A discovery, not a confession</h2><p>Bitcointalk topic 932434 · Russian local board</p></div>
+        <div class="content">
+          <p>Legendary member <span class="mono">amaclin</span> posted “Забавная транзакция (Ханойские башни)” — “Funny transaction (Towers of Hanoi)” — at 07:43:22 forum time on January 23, 2015.</p>
+          <div class="quote">
+            <blockquote>“Забавную транзакцию кто-то запузырил в сеть недавно … Сразу скажу — не я.”<br><br>“Somebody recently launched a funny transaction into the network … I’ll say right away — it wasn’t me.”</blockquote>
+            <footer><span>amaclin · translation from the Russian OP</span><a class="source-link" href="https://bitcointalk.org/index.php?topic=932434.0" target="_blank" rel="noopener">Read the original thread ↗</a></footer>
+          </div>
+          <p>The thread supplied no creator biography, motive, or formal rules. Amaclin inferred the mechanism from the chain: output N appeared to use a private key in <span class="mono">[2^(N−1), 2^N)</span>, making each next solution require roughly twice the computation. He published cracked keys 1–24 and cautioned that his own explanation was only a supposition.</p>
+          <details><summary>What amaclin actually inferred</summary><div class="detail-body"><p>He described 256 outputs from 0.001 to 0.256 BTC, “clever” randomness, a key range doubling with each output, and a reward that increased without doubling. The “Towers of Hanoi” title and chessboard/rice-grain analogy framed the exponential search space. The thread received two replies on January 25 and then went quiet.</p></div></details>
+          <details><summary>Why the English record starts much later</summary><div class="detail-body"><p><span class="mono">Bulista</span> opened the English megathread on December 28, 2015 after finding the transaction “while playing around with my bot.” That thread — <a class="source-link" href="https://bitcointalk.org/index.php?topic=1306983.0" target="_blank" rel="noopener">topic 1306983 ↗</a> — became the puzzle’s best-known public home. Bulista was a discoverer, not the creator.</p></div></details>
+        </div>
+      </section>
+
+      <section class="section" id="claimant">
+        <div class="section-head"><div class="section-index">03 / STRONGEST LEAD</div><h2>The one-post claimant who could spend</h2><p>A statement in April. A matching transaction in July.</p></div>
+        <div class="content">
+          <p>On April 27, 2017, an account named <span class="mono">saatoshi_rising</span> made a single post: “I am the creator.” It described how the keys were made and promised to move outputs 161–256 into the unsolved lower ranges. Eleven weeks later, those exact outputs moved.</p>
+          <div class="evidence-chain" aria-label="Evidence chain">
+            <article class="evidence-node"><div class="year">27 APR 2017</div><div><h3>The claim</h3><p>“I am the creator.” The account says there is no pattern and promises a redistribution.</p></div></article>
+            <div class="arrow" aria-hidden="true"></div>
+            <article class="evidence-node"><div class="year">11 WEEKS</div><div><h3>The test</h3><p>Only someone holding private keys 161–256 can execute the promised spend.</p></div></article>
+            <div class="arrow" aria-hidden="true"></div>
+            <article class="evidence-node"><div class="year">11 JUL 2017</div><div><h3>The proof</h3><p>All 96 outputs move on-chain into the lower unsolved puzzles.</p></div></article>
+          </div>
+          <p class="chain-note"><span class="tag verified">Verified</span> The post’s author controlled the puzzle keys. <span class="tag likely">Likely</span> The key holder was the original creator; a private transfer of the keys is possible in principle, but no evidence supports it.</p>
+          <div class="quote">
+            <blockquote>“There is no pattern. It is just consecutive keys from a deterministic wallet (masked with leading 000...0001 to set difficulty). It is simply a crude measuring instrument, of the cracking strength of the community.”</blockquote>
+            <footer><span>saatoshi_rising · April 27, 2017</span><a class="source-link" href="https://bitcointalk.org/index.php?topic=1306983.msg18765941#msg18765941" target="_blank" rel="noopener">Original post ↗</a></footer>
+          </div>
+          <details><summary>Read the claimant’s full statement</summary><div class="detail-body"><p>“I am the creator.</p><p>You are quite right, 161-256 are silly. I honestly just did not think of this. What is especially embarrassing, is this did not occur to me once, in two years. By way of excuse, I was not really thinking much about the puzzle at all.</p><p>I will make up for two years of stupidity. I will spend from 161-256 to the unsolved parts, as you suggest. In addition, I intend to add further funds. My aim is to boost the density by a factor of 10, from 0.001*length(key) to 0.01*length(key). Probably in the next few weeks. At any rate, when I next have an extended period of quiet and calm, to construct the new transaction carefully.</p><p>A few words about the puzzle. There is no pattern. It is just consecutive keys from a deterministic wallet (masked with leading 000...0001 to set difficulty). It is simply a crude measuring instrument, of the cracking strength of the community.</p><p>Finally, I wish to express appreciation of the efforts of all developers of new cracking tools and technology. The ‘large bitcoin collider’ is especially innovative and interesting!”</p></div></details>
+          <div class="identity-grid">
+            <article class="identity primary"><span class="tag verified">Key control</span><h3>saatoshi_rising</h3><p>One known post. Calm, self-deprecating prose; double spaces after periods; no personal details. A signed forum message was never posted, but the later spend is stronger operational evidence.</p><dl><dt>Claimed</dt><dd>Original creator</dd><dt>Proved</dt><dd>Control of keys 161–256</dd><dt>Identity</dt><dd>Unknown</dd></dl></article>
+            <article class="identity"><span class="tag verified">Not creator</span><h3>amaclin</h3><p>The first public analyst, not the funder. His profile described a Russian-board regular with 7,244 posts and only “at most 0.02 BTC” in crypto — a poor fit for the source whale.</p><dl><dt>Registered</dt><dd>Dec. 20, 2013</dd><dt>Last active</dt><dd>Sept. 29, 2018</dd><dt>Profile</dt><dd><a class="source-link" href="https://bitcointalk.org/index.php?action=profile;u=197593" target="_blank" rel="noopener">Bitcointalk ↗</a></dd></dl></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="funding">
+        <div class="section-head"><div class="section-index">04 / MONEY TRAIL</div><h2>An early-holder whale, still unnamed</h2><p>Four transactions · blocks 339030–339085 · January 15, 2015</p></div>
+        <div class="content">
+          <p>The 32.9 BTC puzzle input emerged from a same-day peel chain controlled by one wallet. The chain began with five inputs from an older uncompressed-key address and passed through a wallet later observed with 56,457.80848111 BTC of lifetime inflow.</p>
+          <div class="txflow">
+            <article class="tx"><div class="block">BLOCK<br>339030</div><div class="amount">200 BTC</div><div class="description"><h3>Old-key consolidation</h3><p>Five inputs — 71, 54.9, 37, 30 and 27.90182308 BTC — from <span class="mono">13R2…WJW9</span>, signed with an uncompressed public key; 200 BTC sent to <span class="mono">173u…cqT</span>.</p></div></article>
+            <article class="tx"><div class="block">BLOCK<br>339043</div><div class="amount">194.99999</div><div class="description"><h3>Compressed-key peel begins</h3><p>The same compressed public key recurs through the next steps, tying the chain to one wallet. 13.12008 BTC leaves; 181.8799 BTC continues.</p></div></article>
+            <article class="tx"><div class="block">BLOCK<br>339045</div><div class="amount">32.9 BTC</div><div class="description"><h3>Puzzle stake separated</h3><p>Alongside 1.5 BTC, 2 BTC and a 100 BTC P2SH output, 32.9 BTC moves to <span class="mono">1Czoy8…Kh697F</span>; 45.47989 BTC returns as change.</p></div></article>
+            <article class="tx"><div class="block">BLOCK<br>339085</div><div class="amount">32.896</div><div class="description"><h3>The puzzle transaction</h3><p><span class="mono">08389f34c98c606322740c0be6a7125d9860bb8d5cb182c02f98461e5fa6cd15</span> creates 256 outputs. Fee: 0.004 BTC.</p></div></article>
+          </div>
+          <p><span class="tag likely">Likely</span> The pattern fits a personal early-holder wallet better than an exchange: single-key reuse, a peel chain, round-number consolidation, and an uncompressed-key predecessor. <strong>No source names the owner.</strong> No published WalletExplorer, oxt.me, blog, or forum attribution for this specific wallet was found.</p>
+        </div>
+      </section>
+
+      <section class="section" id="timeline">
+        <div class="section-head"><div class="section-index">05 / CONTACT RECORD</div><h2>What the key holder did next</h2><p>Two proven actions, one likely one — and no personal revelation.</p></div>
+        <div class="content">
+          <p>After the original funding, the public record contains one forum statement and three major on-chain interventions. Only spending from puzzle addresses proves possession of their keys.</p>
+          <div class="timeline">
+            <article class="event"><time>15 JAN 2015</time><div class="dot"></div><div><h3>Original funding</h3><p>256 outputs receive 0.001 × N BTC, totaling 32.896 BTC.</p></div></article>
+            <article class="event"><time>23 JAN 2015</time><div class="dot"></div><div><h3>First public thread</h3><p>amaclin spots the structure, denies authorship, and infers the key ranges.</p></div></article>
+            <article class="event"><time>27 APR 2017</time><div class="dot"></div><div><h3>One creator claim</h3><p>saatoshi_rising describes the deterministic-wallet construction and promises a redistribution.</p></div></article>
+            <article class="event"><time>11 JUL 2017</time><div class="dot"></div><div><h3>Promise executed <span class="tag verified">Verified</span></h3><p>Transaction <span class="mono">5d45587c…384164</span> spends outputs 161–256 and adds roughly 83.531 BTC to the lower unsolved puzzles.</p></div></article>
+            <article class="event"><time>01 JUN 2019</time><div class="dot"></div><div><h3>Public keys revealed <span class="tag verified">Verified</span></h3><p>A dust-and-sweep operation spends 1,000-sat UTXOs from roughly 20 puzzle addresses, revealing their public keys. Only the key holder could sign the sweep.</p></div></article>
+            <article class="event"><time>16 APR 2023</time><div class="dot"></div><div><h3>872.2 BTC arrives <span class="tag likely">Likely</span></h3><p>A separate SegWit source adds 0.09 × N BTC to unsolved puzzles and sends 0.09 BTC to puzzle #1 as an apparent signal. The continuity strongly suggests the creator, but anyone could fund the public addresses.</p></div></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="theories">
+        <div class="section-head"><div class="section-index">06 / CLAIMS & THEORIES</div><h2>What holds up — and what doesn’t</h2><p>Evidence-ranked, not lore-ranked.</p></div>
+        <div class="content">
+          <div class="theory"><h3>Early miner / whale</h3><p>The source wallet’s scale and uncompressed-key predecessor support an early-holder profile. They do not identify a person.</p><span class="tag likely">Likely profile</span></div>
+          <div class="theory"><h3>Satoshi Nakamoto</h3><p>The doubled “a” in <span class="mono">saatoshi</span>, double spaces, and “measuring instrument” language are wordplay and stylometry, not identity evidence.</p><span class="tag speculative">Speculative</span></div>
+          <div class="theory"><h3>Polynomial key pattern</h3><p>Fitted sequences and “2^n−1” theories overfit early solved keys. Key #4 equals 8, not 15; the key holder explicitly said there is no pattern.</p><span class="tag speculative">Debunked</span></div>
+          <div class="theory"><h3>amaclin</h3><p>He denied authorship in the first post, later described the author as unknown, and his own stated holdings conflict with the whale profile.</p><span class="tag verified">Not supported</span></div>
+          <div class="theory"><h3>Other “I am the creator” posts</h3><p>Critical_Thoughts addressed the mystery rhetorically; albert0bsd joked about creating a software bug; Cricktor claimed to solve puzzle #66, not create the series.</p><span class="tag verified">Non-claims</span></div>
+          <p style="margin-top:28px">A 2022 skeptic correctly argued that a bare forum claim proves nothing and asked for a signed message. No such forum signature appeared. But the July 2017 transaction answered the deeper question: the claimant could spend the puzzle outputs.</p>
+        </div>
+      </section>
+
+      <section class="section" id="unknowns">
+        <div class="section-head"><div class="section-index">07 / OPEN QUESTIONS</div><h2>Where the trail ends</h2><p>Known gaps, preserved as gaps.</p></div>
+        <div class="content">
+          <p>The research found no confirmed name, region, occupation, email, IP metadata, or personal history for the key holder. Timestamp and prose clues are too weak to narrow the field responsibly.</p>
+          <div class="open-questions">
+            <article class="open-q"><b>IDENTITY</b><p>Who controlled <span class="mono">173ujrh…cqT</span> and its older uncompressed-key predecessor?</p></article>
+            <article class="open-q"><b>KEY CUSTODY</b><p>Was <span class="mono">saatoshi_rising</span> the original creator, or could the keys have transferred privately?</p></article>
+            <article class="open-q"><b>2023 FUNDER</b><p>Was the 872.2 BTC top-up made by the same person? The transaction fits, but cannot prove identity.</p></article>
+            <article class="open-q"><b>SIDE OUTPUTS</b><p>Where did the 100 BTC P2SH output and 45.47989 BTC change from the 2015 peel chain move afterward?</p></article>
+            <article class="open-q"><b>ACCOUNT METADATA</b><p>The claimant’s registration date, uid and nonpublic account metadata could not be verified because member search is login-gated.</p></article>
+            <article class="open-q"><b>SIGNED STATEMENT</b><p>No signed message, new puzzle, or later personal statement from the creator has surfaced.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="sources">
+        <div class="section-head"><div class="section-index">08 / SOURCES</div><h2>Primary record first</h2><p>Links inspected on October 3, 2026. On-chain values were read from mempool.space API data.</p></div>
+        <div class="content">
+          <p>The conclusion rests on public forum posts and on-chain spends. Secondary trackers supply indexing and context, not the identity verdict.</p>
+          <div class="sources">
+            <article class="source"><div><h3>Original Russian announcement</h3><p><a class="source-link" href="https://bitcointalk.org/index.php?topic=932434.0" target="_blank" rel="noopener">https://bitcointalk.org/index.php?topic=932434.0</a></p></div></article>
+            <article class="source"><div><h3>amaclin profile</h3><p><a class="source-link" href="https://bitcointalk.org/index.php?action=profile;u=197593" target="_blank" rel="noopener">https://bitcointalk.org/index.php?action=profile;u=197593</a></p></div></article>
+            <article class="source"><div><h3>saatoshi_rising creator post</h3><p><a class="source-link" href="https://bitcointalk.org/index.php?topic=1306983.msg18765941#msg18765941" target="_blank" rel="noopener">https://bitcointalk.org/index.php?topic=1306983.msg18765941#msg18765941</a></p></div></article>
+            <article class="source"><div><h3>Complete preserved quote</h3><p><a class="source-link" href="https://bitcointalk.org/index.php?topic=5201811.0" target="_blank" rel="noopener">https://bitcointalk.org/index.php?topic=5201811.0</a></p></div></article>
+            <article class="source"><div><h3>English discovery megathread</h3><p><a class="source-link" href="https://bitcointalk.org/index.php?topic=1306983.0" target="_blank" rel="noopener">https://bitcointalk.org/index.php?topic=1306983.0</a></p></div></article>
+            <article class="source"><div><h3>Creator-claim skeptic thread</h3><p><a class="source-link" href="https://bitcointalk.org/index.php?topic=5412116.msg60872907" target="_blank" rel="noopener">https://bitcointalk.org/index.php?topic=5412116.msg60872907</a></p></div></article>
+            <article class="source"><div><h3>itsnex1s puzzle atlas</h3><p><a class="source-link" href="https://github.com/itsnex1s/crypto-puzzle-list/blob/HEAD/unsolved/bitcoin-puzzle-transaction.md" target="_blank" rel="noopener">https://github.com/itsnex1s/crypto-puzzle-list/blob/HEAD/unsolved/bitcoin-puzzle-transaction.md</a></p></div></article>
+            <article class="source"><div><h3>roadhero puzzle tracker</h3><p><a class="source-link" href="https://github.com/roadhero/bitcoin-puzzle-info" target="_blank" rel="noopener">https://github.com/roadhero/bitcoin-puzzle-info</a></p></div></article>
+            <article class="source"><div><h3>Historical event timeline</h3><p><a class="source-link" href="https://github.com/luci998866/-1000-btc-bitcoin-challenge" target="_blank" rel="noopener">https://github.com/luci998866/-1000-btc-bitcoin-challenge</a></p></div></article>
+            <article class="source"><div><h3>June 2026 overview</h3><p><a class="source-link" href="https://news.bitcoin.com/key-hunters-eye-58-87m-bitcoin-puzzle-as-916-btc-sits-unsolved-in-78-addresses/" target="_blank" rel="noopener">https://news.bitcoin.com/key-hunters-eye-58-87m-bitcoin-puzzle-as-916-btc-sits-unsolved-in-78-addresses/</a></p></div></article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="closing">
+      <h2>Proof of keys.<br>Not proof of name.</h2>
+      <p>The strongest defensible conclusion is narrow: <span class="mono">saatoshi_rising</span> was controlled by the puzzle key holder in 2017, and the original funds came from an early-holder-scale wallet. Everything beyond that remains an open identity question.</p>
+    </footer>
+    </div>
+
+    <section id="ledger" class="page-view ledger-page">
+      <header class="ledger-hero">
+        <div>
+          <div class="section-index">PUZZLE LEDGER · ORIGINAL TRANSACTION</div>
+          <h1>256 addresses.<br>One doubling range.</h1>
+          <p>Every output from the January 15, 2015 transaction, paired with its exact private-key interval and its place in the puzzle record.</p>
+        </div>
+        <aside class="ledger-explain">
+          <b class="mono">HOW TO READ IT</b>
+          <p>Puzzle N uses a compressed-key P2PKH address and a scalar in <span class="mono">[2^(N−1), 2^N)</span>. Each step doubles the search space. The creator retired #161–256 in 2017 and moved their funds into the lower puzzles.</p>
+        </aside>
+      </header>
+
+      <div class="ledger-summary" aria-label="Ledger summary">
+        <article><b>77</b><span>open puzzles among #1–160</span></article>
+        <article><b>83</b><span>emptied puzzles; #1–2 were already in use, not true solves</span></article>
+        <article><b>96</b><span>retired puzzles, #161–256, swept by the creator in 2017</span></article>
+        <article><b>5</b><span>open puzzles with public keys exposed: #140, #145, #150, #155, #160</span></article>
+      </div>
+
+      <div class="ledger-context">
+        <p><strong>Status snapshot.</strong> The solve ledger is complete through puzzle #135 on July 28, 2026. The 77 open addresses were independently re-read on chain on August 21, 2026; their combined balance was 903.01667813 BTC. This page does not fetch live balances.</p>
+        <p class="source-links">SOURCES<br><a class="source-link" href="https://blockchair.com/bitcoin/transaction/08389f34c98c606322740c0be6a7125d9860bb8d5cb182c02f98461e5fa6cd15.pdf" target="_blank" rel="noopener">Original 256-output transaction ↗</a><br><a class="source-link" href="https://github.com/itsnex1s/crypto-puzzle-list/blob/HEAD/unsolved/bitcoin-puzzle-transaction.md" target="_blank" rel="noopener">Verified open-lot atlas ↗</a><br><a class="source-link" href="https://github.com/itsnex1s/crypto-puzzle-list/blob/HEAD/solved/bitcoin-puzzle-transaction-solved.md" target="_blank" rel="noopener">Verified solve ledger ↗</a></p>
+      </div>
+
+      <div class="ledger-toolbar">
+        <label class="ledger-field">SEARCH PUZZLE OR ADDRESS<input id="ledgerSearch" type="search" inputmode="search" autocomplete="off" placeholder="#71 or 1PWo3…"></label>
+        <label class="ledger-field">STATUS<select id="ledgerFilter"><option value="all">All puzzles</option><option value="open">Open</option><option value="emptied">Solved / pre-used</option><option value="retired">Retired by creator</option><option value="public">Public key exposed</option></select></label>
+        <output id="ledgerCount" class="ledger-count" aria-live="polite">256 rows</output>
+      </div>
+
+      <div class="ledger-table">
+        <div class="ledger-grid ledger-head" aria-hidden="true"><div>PUZZLE</div><div>ADDRESS</div><div>KEY RANGE · HEX</div><div>BALANCE*</div><div>STATUS</div><div>RECORD</div></div>
+        <div id="ledgerRows"></div>
+        <div id="retiredToggle" class="retired-toggle" hidden>
+          <button type="button" id="retiredButton" aria-expanded="false" aria-controls="ledgerRows">Show the remaining 96 retired puzzles (#161–256)</button>
+          <p>Swept by the creator on 11 Jul 2017. They hold no balance and cannot be solved.</p>
+        </div>
+        <div id="ledgerEmpty" class="ledger-empty" hidden>No puzzle addresses match this filter.</div>
+      </div>
+
+      <footer class="ledger-foot">
+        <p><strong>*Balance:</strong> exact for the 77 open puzzles at the August 21, 2026 chain re-read; emptied and retired puzzles are shown as zero. “Original” is the January 2015 amount before top-ups and dust.</p>
+        <p><strong>Public-key puzzles:</strong> in 2019 the creator exposed every fifth public key from #65 through #160. Fifteen have since fallen; the five still open can be attacked with Pollard’s kangaroo rather than address-only brute force.</p>
+      </footer>
+    </section>
+    <section id="cracker" class="page-view cracker-page" hidden>
+      <header class="ledger-hero">
+        <div>
+          <div class="section-index">WEB CRACKER · RUNS ON YOUR DEVICE</div>
+          <h1>Pick a puzzle.<br>Turn the crank.</h1>
+          <p>A genuine secp256k1 brute-force engine in Web Workers. It derives public keys, hashes them, and compares against the target address. Nothing is uploaded, and a found key is shown to you and nobody else.</p>
+        </div>
+        <aside class="ledger-explain">
+          <b class="mono">WHAT TO EXPECT</b>
+          <p>Solved puzzles up to about #26 fall in seconds to a minute, which proves the engine. Open puzzles start at 2^70 keys; this page shows your real odds instead of pretending.</p>
+        </aside>
+      </header>
+
+      <div class="cracker-layout">
+        <div class="cracker-main">
+          <div class="cracker-panel">
+            <div class="panel-title">1 · TARGET</div>
+            <div class="quickpicks" id="crk-quick" role="group" aria-label="Quick picks">
+              <button type="button" data-lot="5">#5 · instant</button>
+              <button type="button" data-lot="20">#20 · ~1 s</button>
+              <button type="button" data-lot="24">#24 · ~15 s</button>
+              <button type="button" data-lot="26">#26 · ~1 min</button>
+              <button type="button" data-lot="71">#71 · next open</button>
+              <button type="button" data-lot="140">#140 · pubkey</button>
+            </div>
+            <div class="cracker-controls">
+              <label class="ledger-field">PUZZLE<select id="crk-puzzle"></select></label>
+              <label class="ledger-field">STRATEGY<select id="crk-mode"><option value="sequential">Sequential from range start</option><option value="random">Random sampling</option><option value="custom">Sequential from custom start</option></select></label>
+              <label class="ledger-field" id="crk-customWrap" hidden>START KEY · HEX<input id="crk-custom" type="text" spellcheck="false" autocomplete="off" inputmode="text"></label>
+              <label class="ledger-field">THREADS<select id="crk-threads"></select></label>
+            </div>
+            <dl class="cracker-facts">
+              <dt>Address</dt><dd class="mono"><a id="crk-target" class="source-link" target="_blank" rel="noopener"></a></dd>
+              <dt>Status</dt><dd id="crk-lotstate"></dd>
+              <dt>Range</dt><dd class="mono" id="crk-range"></dd>
+              <dt>Keyspace</dt><dd class="mono" id="crk-space"></dd>
+              <dt>Estimate</dt><dd id="crk-eta"></dd>
+            </dl>
+          </div>
+
+          <div class="cracker-panel">
+            <div class="panel-title">2 · RUN</div>
+            <div class="cracker-buttons">
+              <button type="button" class="btn-primary" id="crk-start">Run on this device</button>
+              <button type="button" class="btn-secondary" id="crk-stop" hidden>Stop</button>
+              <button type="button" class="btn-secondary" id="crk-resume" hidden>Resume where it stopped</button>
+              <button type="button" class="btn-secondary" id="crk-bench">Benchmark 3 s</button>
+            </div>
+            <div class="cracker-status idle" id="crk-status">Idle. Local engine, runs on your CPU only.</div>
+            <div class="cracker-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="crk-progressbar"><div class="cracker-bar" id="crk-progress"></div></div>
+            <div class="cracker-stats">
+              <div><b id="crk-checked">0</b><span id="crk-checkedLabel">keys checked</span></div>
+              <div><b id="crk-rate">—</b><span id="crk-rateLabel">keys per second</span></div>
+              <div><b id="crk-elapsed">0 s</b><span>elapsed</span></div>
+              <div><b id="crk-remaining">—</b><span id="crk-remainingLabel">time to finish sweep</span></div>
+              <div><b id="crk-pct">0%</b><span id="crk-pctlabel">of keyspace</span></div>
+              <div><b id="crk-workers">—</b><span>threads</span></div>
+            </div>
+            <div class="thread-list" id="crk-threadlist" aria-label="Per-thread position"></div>
+          </div>
+
+          <div class="cracker-result" id="crk-result" hidden><div id="crk-resultBody"></div></div>
+        </div>
+
+        <aside class="cracker-side">
+          <div class="cracker-panel">
+            <div class="panel-title">EVENT LOG</div>
+            <ol class="cracker-log" id="crk-log" aria-live="polite"></ol>
+          </div>
+          <div class="cracker-panel">
+            <div class="panel-title">HOW IT WORKS</div>
+            <ol class="how-list">
+              <li>Each thread holds 128 candidate keys and their curve points.</li>
+              <li>Every step adds G to all 128 points with one batched modular inversion.</li>
+              <li>Each point is compressed, SHA-256’d, then RIPEMD-160’d.</li>
+              <li>The 20-byte hash is compared with the address’s hash160.</li>
+              <li>A match posts the private key back; the page re-derives the address to confirm.</li>
+            </ol>
+            <p class="chain-note">Pure JavaScript BigInt math, about 100k keys per second per core. A single GPU is ten thousand times faster. Serious attempts use <a class="source-link" href="https://github.com/albertobsd/keyhunt" target="_blank" rel="noopener">keyhunt</a> or <a class="source-link" href="https://github.com/JeanLucPons/Kangaroo" target="_blank" rel="noopener">Kangaroo</a>.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </div>
+  <noscript><div class="noscript">This dossier remains fully readable without JavaScript.</div></noscript>
+
+  <div id="puzzleModal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-backdrop" data-modal-close></div>
+    <div class="modal-card" tabindex="-1">
+      <button type="button" class="modal-close" data-modal-close aria-label="Close">×</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>window.DEFAULT_PAGE = "ledger";</script>
+  <script src="/js/addresses.js"></script>
+  <script src="/js/crypto.js"></script>
+  <script src="/js/puzzle-data.js"></script>
+  <script src="/js/price.js"></script>
+  <script src="/js/modal.js"></script>
+  <script src="/js/ledger.js"></script>
+  <script src="/js/cracker.js"></script>
+  <script src="/js/home.js"></script>
+  <script src="/js/donate.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

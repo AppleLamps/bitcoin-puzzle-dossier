@@ -60,3 +60,16 @@ This site can be deployed as a static application.
 ## Notes
 
 The web cracker is designed to be trustworthy and transparent. On already-solved puzzles, it can usually recover the real private key within seconds, which provides a straightforward check that the implementation is working as expected.
+
+## Pages and SEO
+
+- `/` landing page, `/case-file/`, `/ledger/`, `/cracker/`: each tab has its own crawlable URL with a unique title, description, canonical and breadcrumb. In-page hash links (`#claimant`, `#crack-71`) still work on any of them.
+- `/puzzle/N/` for N = 1 to 256: a static page per puzzle with its address, hex key range, keyspace size, status, prize, solve date and links into the cracker and ledger.
+- `sitemap.xml` lists all 260 URLs; `robots.txt` points at it.
+- Visible FAQ on the landing page mirrors the FAQPage JSON-LD so the answers are eligible for rich results.
+
+`tools/build-pages.py` generates the three entry pages, the 256 puzzle pages and the sitemap from `index.html` and the puzzle data. Re-run it after changing copy, metadata, balances or solve dates, then commit the output:
+
+```
+python3 tools/build-pages.py
+```

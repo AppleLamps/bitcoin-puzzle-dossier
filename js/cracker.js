@@ -164,7 +164,7 @@
     setStatus((resumeMaps ? 'Resumed' : 'Running') + ' · ' + (run.mode === 'random' ? 'random sampling' : 'sequential sweep') + ' on ' + run.cores + ' thread' + (run.cores>1?'s':'') + '.', 'run');
     for(i=0;i<run.cores;i++){
       (function(idx){
-        var w = new Worker('js/cracker-worker.js');
+        var w = new Worker('/js/cracker-worker.js');
         var wStart = run.lo + BigInt(idx) * run.chunk;
         var wEnd = idx === run.cores-1 ? run.hi : wStart + run.chunk - 1n;
         totals[idx] = 0n;
@@ -216,7 +216,7 @@
     var n = threadsSelected(), done = 0, keys = 0, ws = [];
     benchWorkers = ws;
     for(var i=0;i<n;i++){
-      var w = new Worker('js/cracker-worker.js');
+      var w = new Worker('/js/cracker-worker.js');
       w.onerror = function(err){ ws.forEach(function(x){ x.terminate(); }); benchWorkers = []; setBusy(false); setStatus('Benchmark worker error: ' + err.message, 'bad'); };
       w.onmessage = function(e){ if(e.data.type !== 'bench') return; keys += e.data.keys / (e.data.ms/1000); if(++done === n){ ws.forEach(function(x){ x.terminate(); }); benchWorkers = []; bench = { rate: Math.round(keys), threads: n }; setBusy(false); setStatus('Benchmark: ' + fmt(bench.rate) + ' keys/s across ' + n + ' thread' + (n>1?'s':'') + '. Estimates now use this figure.', 'idle'); log('Benchmark ' + fmt(bench.rate) + ' keys/s on ' + n + ' thread' + (n>1?'s':'')); describe(); } };
       w.postMessage({ type:'bench', ms:3000 }); ws.push(w);

@@ -51,6 +51,7 @@
         '<dt>Record</dt><dd>' + esc(it.record) + '</dd>' +
         (it.solveDate && it.state === 'solved' ? '<dt>Solved</dt><dd>' + esc(it.solveDate) + '</dd>' : '') +
       '</dl>' +
+      '<p class="modal-actions"><a class="btn-secondary btn-link" href="/puzzle/' + it.n + '/">Open the page for puzzle #' + it.n + '</a></p>' +
       '<p class="modal-foot">Address type: compressed-key P2PKH. Status and balances are from the August 2026 snapshot, not live chain data.</p>';
   }
   function open(n){
