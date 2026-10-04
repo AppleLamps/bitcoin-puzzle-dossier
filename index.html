@@ -6,220 +6,128 @@
   <meta name="color-scheme" content="light dark" />
   <link rel="icon" href="data:," />
   <title>Who Created the 2015 Bitcoin Puzzle</title>
-  <style>
-    :root {
-      color-scheme: light dark;
-      --paper:#f3f1eb;
-      --paper-2:#e8e5dd;
-      --ink:#171715;
-      --muted:#5f5d56;
-      --line:#c9c4b8;
-      --panel:#fbfaf6;
-      --accent:#d9661d;
-      --accent-soft:#f1d3bd;
-      --proof:#0e6e65;
-      --proof-soft:#d4e8e4;
-      --warn:#895b0d;
-      --warn-soft:#eee2c7;
-      --spec:#685377;
-      --spec-soft:#e7dcea;
-      --shadow:0 18px 55px rgba(32,27,19,.09);
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --paper:#111210;
-        --paper-2:#1b1c19;
-        --ink:#f2efe6;
-        --muted:#aaa89f;
-        --line:#393a35;
-        --panel:#181916;
-        --accent:#ff8a42;
-        --accent-soft:#4b2a19;
-        --proof:#66c5b9;
-        --proof-soft:#173d38;
-        --warn:#e3bc6f;
-        --warn-soft:#41341d;
-        --spec:#c3a9d0;
-        --spec-soft:#3b2c43;
-        --shadow:0 18px 55px rgba(0,0,0,.28);
-      }
-    }
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth;background:var(--paper)}
-    body{margin:0;background:var(--paper);color:var(--ink);font-family:Georgia,'Times New Roman',serif;line-height:1.55;text-rendering:optimizeLegibility}
-    a{color:inherit;text-decoration-thickness:1px;text-underline-offset:3px}
-    button{font:inherit}
-    .shell{max-width:1180px;margin:0 auto;padding:24px 28px 88px}
-    .topline{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:10px 0 18px;border-bottom:1px solid var(--line);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;letter-spacing:.06em;color:var(--muted)}
-    .stamp{display:flex;align-items:center;gap:8px}
-    .stamp::before{content:"";width:8px;height:8px;background:var(--accent);border-radius:50%}
-    .method{white-space:nowrap}
-    .hero{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.55fr);gap:64px;padding:72px 0 62px;border-bottom:1px solid var(--line)}
-    .hero h1{font-size:clamp(46px,7.6vw,102px);line-height:.92;letter-spacing:-.052em;font-weight:500;margin:0 0 28px;max-width:880px}
-    .lede{font-size:clamp(20px,2.2vw,29px);line-height:1.34;max-width:780px;margin:0;color:var(--muted)}
-    .lede strong{color:var(--ink);font-weight:600}
-    .verdict{align-self:end;border-top:5px solid var(--proof);padding-top:20px}
-    .verdict b{font:700 12px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.08em;color:var(--proof)}
-    .verdict p{font-size:18px;line-height:1.45;margin:12px 0 0}
-    .quick{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border-bottom:1px solid var(--line)}
-    .quick article{background:var(--paper);padding:28px 22px 30px;min-height:155px}
-    .quick .num{font:500 clamp(28px,4vw,48px)/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent);letter-spacing:-.06em}
-    .quick p{margin:14px 0 0;font-size:14px;line-height:1.4;color:var(--muted)}
-    .rail{position:sticky;top:0;z-index:6;background:color-mix(in srgb,var(--paper) 94%, transparent);backdrop-filter:blur(9px);border-bottom:1px solid var(--line);margin:0 -28px;padding:0 28px}
-    .rail-inner{max-width:1124px;margin:auto;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:11px 0}
-    .rail-inner::-webkit-scrollbar{display:none}
-    .rail a{flex:0 0 auto;text-decoration:none;border:1px solid transparent;padding:7px 10px;border-radius:3px;font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
-    .rail a:hover,.rail a.active{color:var(--ink);border-color:var(--line);background:var(--panel)}
-    .section{display:grid;grid-template-columns:230px minmax(0,1fr);gap:64px;padding:76px 0;border-bottom:1px solid var(--line);scroll-margin-top:64px}
-    .section-head{position:sticky;top:66px;align-self:start}
-    .section-index{font:600 12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent);margin-bottom:16px}
-    .section h2{font-size:34px;line-height:1.05;letter-spacing:-.025em;font-weight:500;margin:0}
-    .section-head p{font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);margin:17px 0 0}
-    .content{min-width:0}
-    .content>p:first-child{font-size:22px;line-height:1.5;margin-top:-7px}
-    .content p{max-width:790px}
-    .tag{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:5px 9px;font:700 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.05em;vertical-align:middle;white-space:nowrap}
-    .tag::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
-    .verified{background:var(--proof-soft);color:var(--proof)}
-    .likely{background:var(--warn-soft);color:var(--warn)}
-    .speculative{background:var(--spec-soft);color:var(--spec)}
-    .correction{display:grid;grid-template-columns:38px 1fr;gap:16px;border-top:1px solid var(--line);padding:20px 0}
-    .correction:last-child{border-bottom:1px solid var(--line)}
-    .correction .mark{font:700 28px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent)}
-    .correction h3{font:600 18px/1.25 Georgia,'Times New Roman',serif;margin:0 0 5px}
-    .correction p{margin:0;color:var(--muted)}
-    .quote{margin:34px 0;padding:28px 30px;background:var(--panel);box-shadow:var(--shadow);border-top:4px solid var(--ink)}
-    .quote blockquote{margin:0;font-size:clamp(19px,2vw,25px);line-height:1.48}
-    .quote footer{display:flex;justify-content:space-between;gap:15px;align-items:end;margin-top:22px;padding-top:15px;border-top:1px solid var(--line);font:11px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
-    .source-link{color:var(--accent);overflow-wrap:anywhere}
-    details{border-top:1px solid var(--line)}
-    details:last-child{border-bottom:1px solid var(--line)}
-    summary{cursor:pointer;padding:17px 0;list-style:none;font:700 12px/1.3 ui-monospace,SFMono-Regular,Menlo,monospace;display:flex;justify-content:space-between;gap:18px;color:var(--ink)}
-    summary::-webkit-details-marker{display:none}
-    summary::after{content:"+";color:var(--accent);font-size:17px}
-    details[open] summary::after{content:"−"}
-    .detail-body{padding:2px 0 22px;color:var(--muted)}
-    .detail-body p{margin:7px 0}
-    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere;font-size:.9em}
-    .evidence-chain{display:grid;grid-template-columns:1fr 54px 1fr 54px 1fr;margin:38px 0 28px;align-items:center}
-    .evidence-node{min-height:180px;background:var(--panel);border:1px solid var(--line);padding:20px;display:flex;flex-direction:column;justify-content:space-between}
-    .evidence-node .year{font:700 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent)}
-    .evidence-node h3{font-size:21px;line-height:1.15;margin:18px 0 8px}
-    .evidence-node p{font-size:14px;line-height:1.4;color:var(--muted);margin:0}
-    .arrow{height:1px;background:var(--line);position:relative}
-    .arrow::after{content:"";position:absolute;right:0;top:-4px;border-left:7px solid var(--line);border-top:4px solid transparent;border-bottom:4px solid transparent}
-    .chain-note{font-size:14px;color:var(--muted)}
-    .txflow{margin:34px 0;border-top:1px solid var(--line)}
-    .tx{display:grid;grid-template-columns:84px 130px minmax(0,1fr);gap:18px;padding:22px 0;border-bottom:1px solid var(--line);align-items:start}
-    .tx .block{font:11px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
-    .tx .amount{font:600 21px/1.1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent)}
-    .tx h3{font-size:17px;margin:0 0 5px}
-    .tx p{font-size:14px;margin:0;color:var(--muted)}
-    .identity-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:32px 0}
-    .identity{background:var(--panel);padding:25px;border-top:4px solid var(--line)}
-    .identity.primary{border-color:var(--proof)}
-    .identity h3{font-size:24px;margin:8px 0 12px;font-weight:500}
-    .identity p{font-size:15px;color:var(--muted)}
-    .identity dl{display:grid;grid-template-columns:110px 1fr;gap:9px;margin:22px 0 0;font-size:13px}
-    .identity dt{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
-    .identity dd{margin:0}
-    .timeline{margin-top:34px}
-    .event{display:grid;grid-template-columns:126px 28px 1fr;gap:16px;position:relative;padding-bottom:32px}
-    .event:not(:last-child)::after{content:"";position:absolute;left:139px;top:17px;bottom:-1px;width:1px;background:var(--line)}
-    .event time{font:700 11px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);padding-top:2px}
-    .dot{width:13px;height:13px;margin-top:1px;border-radius:50%;border:3px solid var(--paper);outline:1px solid var(--line);background:var(--accent);z-index:1}
-    .event h3{font-size:19px;margin:0 0 5px}
-    .event p{font-size:14px;color:var(--muted);margin:0}
-    .theory{display:grid;grid-template-columns:150px 1fr auto;gap:18px;padding:20px 0;border-top:1px solid var(--line);align-items:start}
-    .theory:last-child{border-bottom:1px solid var(--line)}
-    .theory h3{font-size:17px;margin:0}
-    .theory p{font-size:14px;color:var(--muted);margin:0}
-    .sources{margin-top:30px;counter-reset:source}
-    .source{counter-increment:source;display:grid;grid-template-columns:34px 1fr;gap:16px;padding:16px 0;border-top:1px solid var(--line)}
-    .source::before{content:counter(source,decimal-leading-zero);font:700 11px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent)}
-    .source h3{font-size:15px;margin:0 0 3px}
-    .source p{font-size:12px;line-height:1.55;color:var(--muted);margin:0;overflow-wrap:anywhere}
-    .open-questions{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:30px}
-    .open-q{background:var(--paper);padding:22px}
-    .open-q b{font:700 11px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent)}
-    .open-q p{font-size:15px;line-height:1.45;margin:10px 0 0}
-    .closing{padding:66px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:64px}
-    .closing h2{font-size:clamp(34px,5vw,66px);line-height:1;letter-spacing:-.04em;font-weight:500;margin:0}
-    .closing p{font-size:18px;color:var(--muted);margin:0}
-    .noscript{padding:12px;background:var(--warn-soft);color:var(--warn);font:13px ui-monospace,monospace}
-    .page-view[hidden]{display:none}
-    .page-tabs{display:flex;gap:4px;align-items:center}
-    .page-tabs a{text-decoration:none;padding:7px 10px;border:1px solid transparent;border-radius:3px;color:var(--muted);font-weight:700}
-    .page-tabs a:hover,.page-tabs a.active{color:var(--ink);border-color:var(--line);background:var(--panel)}
-    .ledger-page{padding-top:56px}
-    .ledger-hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(270px,.75fr);gap:64px;padding:16px 0 52px;border-bottom:1px solid var(--line)}
-    .ledger-hero h1{font-size:clamp(46px,7vw,88px);line-height:.94;letter-spacing:-.05em;font-weight:500;margin:14px 0 24px}
-    .ledger-hero p{font-size:20px;line-height:1.45;color:var(--muted);max-width:760px;margin:0}
-    .ledger-explain{align-self:end;border-top:5px solid var(--accent);padding-top:18px}
-    .ledger-explain p{font-size:16px;margin:10px 0 0}
-    .ledger-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border-bottom:1px solid var(--line)}
-    .ledger-summary article{background:var(--paper);padding:24px 20px}
-    .ledger-summary b{display:block;font:500 32px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent);letter-spacing:-.05em}
-    .ledger-summary span{display:block;margin-top:10px;font-size:13px;line-height:1.35;color:var(--muted)}
-    .ledger-context{display:grid;grid-template-columns:1fr 1fr;gap:48px;padding:42px 0 34px;border-bottom:1px solid var(--line)}
-    .ledger-context p{margin:0;color:var(--muted)}
-    .ledger-context strong{color:var(--ink)}
-    .ledger-context .source-links{font:12px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace}
-    .ledger-toolbar{display:grid;grid-template-columns:minmax(220px,1fr) 220px auto;gap:14px;align-items:end;padding:34px 0 18px}
-    .ledger-field{display:grid;gap:7px;font:700 10px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em;color:var(--muted)}
-    .ledger-field input,.ledger-field select{width:100%;min-height:43px;border:1px solid var(--line);border-radius:3px;background:var(--panel);color:var(--ink);padding:9px 11px;font:14px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace}
-    .ledger-count{padding:11px 0;font:700 11px/1.3 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);white-space:nowrap}
-    .ledger-table{border-top:1px solid var(--ink)}
-    .ledger-grid{display:grid;grid-template-columns:54px minmax(220px,1.25fr) minmax(230px,1.15fr) 88px 112px minmax(150px,.8fr);gap:15px;align-items:start}
-    .ledger-head{padding:11px 0;border-bottom:1px solid var(--line);font:700 10px/1.25 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em;color:var(--muted)}
-    .ledger-row{padding:15px 0;border-bottom:1px solid var(--line);font-size:13px}
-    .ledger-num{font:700 16px/1.3 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--accent)}
-    .ledger-address,.ledger-range{font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere}
-    .ledger-original{font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace}
-    .ledger-original small{display:block;margin-top:4px;color:var(--muted);font-size:9px}
-    .ledger-record{font-size:12px;line-height:1.45;color:var(--muted)}
-    .state{display:inline-block;border-radius:999px;padding:5px 8px;font:700 9px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.04em;white-space:nowrap}
-    .state-open{color:var(--proof);background:var(--proof-soft)}
-    .state-solved{color:var(--muted);background:var(--paper-2)}
-    .state-retired{color:var(--warn);background:var(--warn-soft)}
-    .state-preused{color:var(--spec);background:var(--spec-soft)}
-    .ledger-empty{padding:34px 0;color:var(--muted)}
-    .ledger-foot{display:grid;grid-template-columns:1fr 1fr;gap:40px;padding:34px 0 8px;color:var(--muted);font-size:13px}
-    .ledger-foot p{margin:0}
-    @media(max-width:800px){
-      .shell{padding:14px 18px 64px}.topline{font-size:10px}.method{display:none}
-      .hero{grid-template-columns:1fr;gap:42px;padding:52px 0 42px}.hero h1{font-size:clamp(48px,16vw,70px)}
-      .quick{grid-template-columns:1fr 1fr}.quick article{min-height:130px;padding:22px 14px}
-      .rail{margin:0 -18px;padding:0 18px;position:static}
-      .rail-inner{flex-wrap:wrap;gap:4px;padding:10px 0}
-      .rail a{padding:6px 8px}
-      .section{grid-template-columns:1fr;gap:27px;padding:56px 0}.section-head{position:static}.section-head p{max-width:520px}.section h2{font-size:31px}
-      .content>p:first-child{font-size:19px}
-      .evidence-chain{grid-template-columns:1fr;margin:28px 0}.arrow{width:1px;height:32px;margin:auto}.arrow::after{right:-3px;top:auto;bottom:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:7px solid var(--line);border-bottom:0}
-      .evidence-node{min-height:145px}
-      .identity-grid{grid-template-columns:1fr}.tx{grid-template-columns:84px 1fr}.tx .description{grid-column:1/-1}.timeline .event{grid-template-columns:90px 22px 1fr;gap:10px}.event:not(:last-child)::after{left:100px}
-      .theory{grid-template-columns:1fr auto}.theory p{grid-column:1/-1}.open-questions{grid-template-columns:1fr}.closing{grid-template-columns:1fr;gap:24px}
-      .quote{padding:22px 18px;margin:28px 0}.quote footer{display:block}.quote footer a{display:block;margin-top:8px}
-      .page-tabs a{padding:6px 7px;font-size:9px}.ledger-page{padding-top:38px}.ledger-hero{grid-template-columns:1fr;gap:28px;padding:8px 0 38px}.ledger-hero h1{font-size:clamp(44px,14vw,64px)}
-      .ledger-summary{grid-template-columns:1fr 1fr}.ledger-summary article{padding:19px 14px}.ledger-context{grid-template-columns:1fr;gap:20px;padding:32px 0 26px}
-      .ledger-toolbar{grid-template-columns:1fr;gap:12px;padding-top:26px}.ledger-count{padding:2px 0 6px}
-      .ledger-head{display:none}.ledger-row{display:block;padding:19px 0}.ledger-row>div{margin-top:12px}.ledger-row>div:first-child{margin-top:0}
-      .ledger-row>div::before{content:attr(data-label);display:block;margin-bottom:4px;font:700 9px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em;color:var(--muted)}
-      .ledger-num{font-size:20px}.ledger-address,.ledger-range{font-size:11px}.ledger-foot{grid-template-columns:1fr;gap:17px}
-    }
-    @media(max-width:430px){.quick{grid-template-columns:1fr}.quick article{min-height:auto}.hero h1{font-size:48px}.tx{grid-template-columns:1fr;gap:8px}.tx .description{grid-column:auto}.identity dl{grid-template-columns:86px 1fr}.event{grid-template-columns:76px 20px 1fr!important}.event:not(:last-child)::after{left:85px!important}.source{grid-template-columns:26px 1fr}.ledger-summary{grid-template-columns:1fr}.topline{align-items:flex-start;gap:10px}.stamp{max-width:165px;line-height:1.35}}
-    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-  </style>
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
   <div class="shell">
     <div class="topline">
       <div class="stamp">INVESTIGATIVE DOSSIER · RESEARCHED 03 OCT 2026</div>
       <nav class="page-tabs" aria-label="Pages">
+        <a href="#home" data-page-link="home">The puzzle</a>
         <a href="#dossier" data-page-link="dossier">Case file</a>
         <a href="#ledger" data-page-link="ledger">Puzzle ledger</a>
       </nav>
     </div>
+
+    <section id="home" class="page-view home-page">
+      <header class="hero">
+        <div>
+          <div class="section-index">THE 2015 BITCOIN PUZZLE TRANSACTION</div>
+          <h1>160 locks.<br>One doubling key.</h1>
+          <p class="lede">On 15 January 2015 someone funded 256 addresses whose private keys sit in ever-larger ranges: lot N hides inside <strong>[2^(N−1), 2^N)</strong>. Solvers have cracked the easy end. The hard end is still paying.</p>
+        </div>
+        <aside class="verdict">
+          <b>UNSOLVED PRIZE POOL</b>
+          <p class="num" id="bountyUsd">—</p>
+          <p><strong id="bountyBtc">903.01667813 BTC</strong> across <span id="statOpenInline">77</span> open lots</p>
+          <small class="bounty-note" id="bountyNote">Fetching live BTC price…</small>
+        </aside>
+      </header>
+
+      <div class="quick" aria-label="Puzzle status">
+        <article><div class="num" id="statSolved">—</div><p>lots genuinely solved so far, out of 160 that can be solved</p></article>
+        <article><div class="num" id="statOpen">—</div><p>lots still open, #71 up to #160, all funded</p></article>
+        <article><div class="num" id="statLatest">—</div><p id="statLatestNote">most recent solve</p></article>
+        <article><div class="num" id="statNext">—</div><p id="statNextNote">cheapest unsolved lot, next in line</p></article>
+      </div>
+
+      <nav class="rail" aria-label="Puzzle sections">
+        <div class="rail-inner">
+          <a href="#how">How it works</a>
+          <a href="#attempt">How to attempt it</a>
+          <a href="#cracker">Web cracker</a>
+          <a href="#odds">The odds</a>
+        </div>
+      </nav>
+
+      <main>
+        <section class="section" id="how">
+          <div class="section-head"><div class="section-index">01</div><h2>How the puzzle works</h2><p>One transaction, 256 outputs, a private key per output that lives in a known interval.</p></div>
+          <div class="content">
+            <p>Every lot is an ordinary pay-to-pubkey-hash address. What makes it a puzzle is that the private key for lot N was chosen from a tiny slice of the 256-bit keyspace: an integer between 2^(N−1) and 2^N − 1. Lot 1 has a single candidate. Lot 20 has about half a million. Lot 71, the cheapest still unsolved, has 1.18 sextillion.</p>
+            <div class="how-grid">
+              <div class="how-card"><b>01 · PICK A LOT</b><p>Choose a puzzle number N. Its address and key range are fixed and public. The ledger tab lists all of them.</p></div>
+              <div class="how-card"><b>02 · ENUMERATE KEYS</b><p>Walk the integers in [2^(N−1), 2^N). For each one, multiply the secp256k1 generator by it to get a public key.</p></div>
+              <div class="how-card"><b>03 · HASH AND COMPARE</b><p>SHA-256 then RIPEMD-160 the compressed public key. If the 20-byte result equals the address’s hash, you hold the key.</p></div>
+              <div class="how-card"><b>04 · SWEEP THE PRIZE</b><p>Import the key into a wallet and move the coins. Do it fast: bots watch the mempool for exactly these spends.</p></div>
+            </div>
+            <p>The creator later topped the prizes up to N/100 BTC per lot, swept lots 161 to 256 back in 2017, and in 2019 revealed the public keys of every fifth lot from 65 to 160. Those public-key lots can be attacked with Pollard’s kangaroo, which needs roughly the square root of the work of a blind search. Full background on who did this and why is in the <a href="#dossier">case file</a>.</p>
+          </div>
+        </section>
+
+        <section class="section" id="attempt">
+          <div class="section-head"><div class="section-index">02</div><h2>How to attempt it</h2><p>What serious solvers actually run, and what each approach costs.</p></div>
+          <div class="content">
+            <p>There is no trick. Every solve so far has been raw computation, so the question is only how many keys per second you can test and how lucky you are.</p>
+            <details open><summary>Address-only lots: brute force<span>#71–#160 except every fifth</span></summary><div class="detail-body">
+              <p>You only know the address, so each candidate key needs a full elliptic-curve multiplication plus two hashes. GPU tools such as BitCrack, KeyHunt-Cuda and VanitySearch-style kernels do this at a few hundred million to a few billion keys per second per card. Lot 71 needs on average 2^69 tests, about 590 quintillion. At one billion keys per second that is around 18,700 years for one card.</p>
+              <p>Random sampling versus sequential scanning does not change your expected time. It only changes whether you duplicate work with other solvers scanning from the bottom.</p>
+            </div></details>
+            <details><summary>Public-key lots: Pollard’s kangaroo<span>#140, #145, #150, #155, #160</span></summary><div class="detail-body">
+              <p>When the public key is known the problem becomes a discrete logarithm in a bounded interval. Kangaroo (JeanLucPons’ CUDA implementation is the standard) solves an N-bit interval in about 2·√(2^N) group operations. Lot 140 needs on the order of 2^71 operations, which is why #130 fell in 2024 to a large GPU pool and #135 fell in July 2026. Lot 140 is the current frontier; expect it to take a cluster, not a desktop.</p>
+            </div></details>
+            <details><summary>Pools and the front-running problem<span>Why a found key is not yet a prize</span></summary><div class="detail-body">
+              <p>Pools split the interval among contributors and share the reward. Solo or pooled, the dangerous moment is the spend. When your sweep transaction hits the mempool, the public key is revealed, and for lots below about 2^125 a well-provisioned bot can derive the private key and replace your transaction with a higher fee before it confirms. Solvers of #66 lost exactly this race in 2024. Broadcast through a private relay or a miner-direct channel, and use a high fee.</p>
+            </div></details>
+            <details><summary>Tools and references<span>Where to start</span></summary><div class="detail-body">
+              <p class="source-links"><a class="source-link" href="https://github.com/JeanLucPons/Kangaroo" target="_blank" rel="noopener">JeanLucPons / Kangaroo ↗</a> · <a class="source-link" href="https://github.com/albertobsd/keyhunt" target="_blank" rel="noopener">albertobsd / keyhunt ↗</a> · <a class="source-link" href="https://github.com/brichard19/BitCrack" target="_blank" rel="noopener">brichard19 / BitCrack ↗</a> · <a class="source-link" href="https://privatekeys.pw/puzzles/bitcoin-puzzle-tx" target="_blank" rel="noopener">privatekeys.pw puzzle tracker ↗</a> · <a class="source-link" href="https://bitcointalk.org/index.php?topic=1306983.0" target="_blank" rel="noopener">BitcoinTalk thread ↗</a></p>
+            </div></details>
+          </div>
+        </section>
+
+        <section class="section" id="cracker">
+          <div class="section-head"><div class="section-index">03</div><h2>Web cracker</h2><p>A real brute-force engine running in your browser’s worker threads. Nothing leaves your device.</p></div>
+          <div class="content">
+            <p>Pick a lot and press run. The page derives public keys with its own secp256k1 implementation, hashes them, and compares against the target address. On an already-solved lot it finds the real private key within seconds, which is how you can tell it is not a toy. On an open lot it is honest about the odds.</p>
+            <div class="cracker" id="webCracker">
+              <div class="cracker-controls">
+                <label class="ledger-field">PUZZLE<select id="crk-puzzle"></select></label>
+                <label class="ledger-field">STRATEGY<select id="crk-mode"><option value="sequential">Sequential from range start</option><option value="random">Random sampling</option><option value="custom">Sequential from custom start</option></select></label>
+                <label class="ledger-field" id="crk-customWrap" hidden>START KEY · HEX<input id="crk-custom" type="text" spellcheck="false" autocomplete="off"></label>
+                <div class="cracker-buttons"><button type="button" class="btn-primary" id="crk-start">Run on this device</button><button type="button" class="btn-secondary" id="crk-stop" hidden>Stop</button></div>
+              </div>
+              <dl class="cracker-facts">
+                <dt>Target</dt><dd class="mono"><a id="crk-target" class="source-link" target="_blank" rel="noopener"></a></dd>
+                <dt>Range</dt><dd class="mono" id="crk-range"></dd>
+                <dt>Keyspace</dt><dd class="mono" id="crk-space"></dd>
+                <dt>Estimate</dt><dd id="crk-eta"></dd>
+              </dl>
+              <div class="cracker-status idle" id="crk-status">Idle. Local engine, runs on your CPU only.</div>
+              <div class="cracker-progress"><div class="cracker-bar" id="crk-progress"></div></div>
+              <div class="cracker-stats">
+                <div><b id="crk-checked">0</b><span>keys checked</span></div>
+                <div><b id="crk-rate">—</b><span>throughput</span></div>
+                <div><b id="crk-elapsed">0 s</b><span>elapsed</span></div>
+                <div><b id="crk-workers">—</b><span>threads</span></div>
+                <div><b id="crk-pct">0%</b><span>of keyspace</span></div>
+                <div><b id="crk-current" class="mono small">—</b><span>current key (thread 1)</span></div>
+              </div>
+              <div class="cracker-result" id="crk-result" hidden><div id="crk-resultBody"></div></div>
+            </div>
+            <p class="chain-note">Throughput here is pure JavaScript BigInt math, roughly a hundred thousand keys per second per core. A single modern GPU is ten thousand times faster. Use this to understand the mechanics and to verify solved lots, then move to GPU tooling if you mean to compete.</p>
+          </div>
+        </section>
+
+        <section class="section" id="odds">
+          <div class="section-head"><div class="section-index">04</div><h2>The odds</h2><p>What the remaining lots actually cost to crack.</p></div>
+          <div class="content">
+            <p>Each step up doubles the work. The table shows the expected number of key tests for the next few unsolved lots and the time at a billion tests per second, which is a realistic single high-end GPU rate for address-only search.</p>
+            <div class="odds-table" id="oddsTable"></div>
+            <p>Lot 71 is within reach of a dedicated farm over years, or a very large pool over months. Lot 100 and above are beyond any brute force at today’s hardware. The public-key lots are a separate race: #140 is roughly a thousand times harder than #130 was, and #130 took a GPU pool most of a year.</p>
+          </div>
+        </section>
+      </main>
+    </section>
 
     <div id="dossier" class="page-view">
     <header class="hero">
@@ -411,13 +319,17 @@
 
       <div class="ledger-toolbar">
         <label class="ledger-field">SEARCH LOT OR ADDRESS<input id="ledgerSearch" type="search" inputmode="search" autocomplete="off" placeholder="#71 or 1PWo3…"></label>
-        <label class="ledger-field">STATUS<select id="ledgerFilter"><option value="all">All 256</option><option value="open">Open</option><option value="emptied">Solved / pre-used</option><option value="retired">Retired by creator</option><option value="public">Public key exposed</option></select></label>
+        <label class="ledger-field">STATUS<select id="ledgerFilter"><option value="all">All lots</option><option value="open">Open</option><option value="emptied">Solved / pre-used</option><option value="retired">Retired by creator</option><option value="public">Public key exposed</option></select></label>
         <output id="ledgerCount" class="ledger-count" aria-live="polite">256 rows</output>
       </div>
 
       <div class="ledger-table">
         <div class="ledger-grid ledger-head" aria-hidden="true"><div>LOT</div><div>ADDRESS</div><div>KEY RANGE · HEX</div><div>BALANCE*</div><div>STATUS</div><div>RECORD</div></div>
         <div id="ledgerRows"></div>
+        <div id="retiredToggle" class="retired-toggle" hidden>
+          <button type="button" id="retiredButton" aria-expanded="false" aria-controls="ledgerRows">Show the remaining 96 retired lots (#161–256)</button>
+          <p>Swept by the creator on 11 Jul 2017. They hold no balance and cannot be solved.</p>
+        </div>
         <div id="ledgerEmpty" class="ledger-empty" hidden>No puzzle addresses match this filter.</div>
       </div>
 
@@ -428,106 +340,23 @@
     </section>
   </div>
   <noscript><div class="noscript">This dossier remains fully readable without JavaScript.</div></noscript>
-  <script src="data:application/javascript;base64,d2luZG93LnB1enpsZUFkZHJlc3NlcyA9IGAKMUJnR1o5dGNONHJtOUtCekRuN0twclF6ODdTWjI2U0FNSAoxQ1VORUJqWXJDbjJ5MVNkaVVNb2hhS1VpNHdwUDMyNkxiCjE5WmV3SDhLazFQRGJTTmRKOTdGUDRFaUNqVFJhWk1aUUEKMUVocWJ5VU12dnM3QmZMOGdvWTZxY1BiRDZZS2ZQcWI3ZQoxRTZOdUZqQ2kyN1c1em9YZzhUUmRjU1JxODR6SmVCVzNrCjFQaXRTY05MeXAySEN5Z3phZENoN0Z2ZVRuZm1wUGJmcDgKMU1jVnQxdk10Q0M3eW41Yjl3Z1gxODMzeUNjTFh6dWVlQwoxTTkydFNxTm1RTFl3MzNmdUJ2am1lYWRpcmgxeXNNQnhLCjFDUUZ3Y2p3MWR3aHRrVldCdHROTER0cUw3aXZCb25HUFYKMUxlQlpQNVFDd3dnWFJ0bVZVdlRWcnJhcVBVb2t5TEhxZQoxUGdRVkxtc3QzWjMxNEpyUW41VE5peXM4SGMzOFRjWEp1CjFEQmF1bVp4VWtNNHFNUVJ0MkxWV3lGSnE1a0R0U1pRb3QKMVBpZThKa3hCVDZNR1B6OU52aTNmc1BrcjJEOHEzR0JjMQoxRXJaV2c1Y0ZDZTRWdzVCemdmekI3NFZOTGFYRWlFa2hrCjFRQ2JXOUhXbndRV2lRcVZvNWV4aEFubWZxS1JyQ1JzdlcKMUJEeXJRNldvRjhWTjNnOVNBUzFpS1pjUHpGZm5EVmllWQoxSGR1UEVYWlJkRzI2U1VUNVlrODNtTGtQeWpuWnVKN0JtCjFHbk5UbVRWTFppcVFmTGJBZHA5RFZkaWNFbkI1R29FUkUKMU5XbVpScEhINFhTUHdzVzZkc1MzbnJOV2ZMMXlySmo0dwoxSHNNSnhOaVY3VEx4bW9GNnVKTmt5ZHhQRkRvZzROUXVtCjE0b0ZOWHVjZnRzSGlVTVk4dWN0ZzZONDg3cml1eVhzNGgKMUNmWldLMVFUUUUzZVM5cW42MWRRalY4OUtEalp6Zk5jdgoxTDJHTThlRTdtSldMZG8zSFpTNnN1MTgzMk5YMnR4YWFjCjFyU25YTXI2M2pkQ3VlZ0pGdWlkSnFXeFVQVjdBdFVmNwoxNUpoWVhuNk14M29GNFk3UGNUQXYyd1ZWQXVDRkZRTmlQCjFKVm5TVDk1N2hHenRvbmFXSzZGb3VnZHRqeHpIelJNTWcKMTI4ejVkN25ON1BrQ3VYNXFvQTRZczZwbXhVWW5FeTg2awoxMmpidHpCYjU0cjk3VEN3VzNHMWdDRm91bXBja1JBUGRZCjE5RUVDNTJrclJVSzFSa1VBRVptUWRqVHlIVDdHcDFUWVQKMUxIdG5wZDhuVTVWSEVNa0cyVE1ZWU5VampMYzk5MmJwcwoxTGhFNnNDVHVHYWU0MkF4dTFMMVpCN0w5NnlpOWlyRUJFCjFGUm9IQTl4ZXdxN0RqcloxcHNXSlZlVGVyOGdIUnFFdlIKMTg3c3dGTWp6MUc1NHljVlU1NkI3alpGSEZUTlZRRkRpdQoxUFdBQkU3b1VhaEcyQUZGUWhodlZpUW92bkNyNHJFdjdRCjFQV0N4NWZvdm9FYW9Cb3dBdkY1azkxbTJYYXQ5Yk1nd2IKMUJlMlVGOU5MZnlMRmJ0bTNUQ2JtdW9jYzlOMUtkdWNpMQoxNGlYaG44YkdhalZXZWdaSEoxOHZKTEhobnRjcEw0ZGV4CjFIQnRBcEFGQTlCMlladzNHMllLU01DdGIzZFZuanVOZTIKMTIyQUpoS0xFZmtGQmFHQWQ4NHBMcDFrZkU3eEszR2RUOAoxRWVBeGNwckIyUHBDbnIzNFZmWmRGcmtVV3V4eWlORUZ2CjFMNXNVOXF2SmV1d1FVZHQ0eTFlaUxtcXVGeEtqdEhyM0UKMUUzMkdQV2dEeWV5UWFjNGFKeG05SFZvTHJyRVlQbk00TgoxUGlGdXFHcEc4eUdNNXY2ck5IV1MzVGpzRzZhd2dFR0ExCjFDa1IydVM3TG1Gd2MzVDJqVjhDMUJoV2I1bVFhb3hlZEYKMU50aUxOR2VnSFdFM01wOWcySlBrZ3g2d1VnNFRXN2JiawoxRjNKUk1XdWRCYWo0OEVod2NIRGRwZXV5Mmp3QUNOeGpQCjFQZDhWdlQ0OXNIS3NtcXJRaVA2MVJzVndtWENaNmF5N1oKMURGWWhhQjJKOXExTExaSldLVG5zY1BXb3M5VkJxREh6dgoxMkNpVWhZVlRUSDMzdzNTUFVCcWNwTW9xbkFwQVY0V0NGCjFNRXppdGU0UmVOdVdhTDVEczE3ZVBLdDJkQ3hXRW9md2sKMU5wblF5Wjd4MjR1ZDgyYjdXaVJOdlBtNk44YnFHUW5hUwoxNXo5YzlzVnB1NmZ3TmlLN2RNQUZnTVlTSzRHcXNHWmltCjE1SzFZS0pNaUo0ZnBlc1RWVWNCeW96MzM0ckhta254bVQKMUtZVXY3blN2WHg0NjQyVEtldUMyU05kVGszMjZ1VXBGeQoxTHpoUzNrM2U5VWI4aTJXMVY4eFFGZEI4bjJNWUNIUENhCjE3YVBZUjFtNnBWQWFjWGcxUFRERFU3WGFmdksxZHh2aGkKMTVjOW1QR0xrdTFIdVc5TFJ0QmY0amNIVnBCVXQ4dHhLegoxRG44TkY4cUR5eWZITWt0bXVvUUxHeWpXbVpYZ3Zvc1hmCjFIQVgybjlVcnV1OVlEdDRjcVJnWWN2dEd2WmoxcmJVeXQKMUtuNWgycXBndzltV0U1aktwazhQUDRxdnZKMVFWeThzdQoxQVZKS3d6czlBc2tyYUpMR0hBWlBpYVpjcnBEcjFVNkFCCjFNZTZFZnB3Wks1a1F6aUJ3QmZ2TGlIamFQR3hDS0xvSmkKMU5wWWp0TGlyYTE2TGZHYkd3Wko1SmJEUGgzYWk5YmpmNAoxNmpZN3FMSm54YjdDSFp5cUJQOHFjYTlkNTFnQWp5WFFOCjE4Wk1id1VGTE1Ib1pCYmZwQ2pVSlFUQ01DYmt0c2hncGUKMTN6YjFoUWJXVnNjMlM3WlRablAyRzR1bmROTnBkaDVzbwoxQlk4R1FibnVlWW9md1N1RkFUM1VTQWhHalBya3hEZFc5CjFNVkRZZ1ZhU042aUtLRXNielJVQVlGcllKYWRMWVp2dloKMTl2a2lFYWpmaHVaOGJzOFp1MmpnbUM2b3FaYldxaHhoRwoxOVlaRUNYajNTeEVaTW9VZUoxeWlQc3c4eEFOZTdNN1FSCjFQV28zSmVCOWpyR3dmSEROcGRHSzU0Q1Jhczdmc1Z6WFUKMUpUSzdzOVlWWXl3Zm01WFVIN1JOaEhKSDFMc2hDYVJGUgoxMlZWUk5QaTRTSnFVVHNwNkZtcURxWTVzR29zRHR5c240CjFGV0djVkRLM0pHekNDM1d0a1lldFVMUHN6TWFLMkprc3YKMUozNlVqVUJ5R3JvWGNDdm1qMTNVNnV3YVZ2OWNhRWVBdAoxREpoMmVIRllRZkFDUG1ydnB5V2M4TVNUWUtoN3c5ZVJGCjFCeGs0Q1FkcUw5cDIySkV0RGZkWE1zbmcxWGFjaWZVdEUKMTVxRjZYNTFodURqcVRtRjlCSmd4WGR0MXhjajQ2Sm1oYgoxQVJrOEhXSk1uOGpzOHRRbUdVSmVRSGpTRTdLUmtuMnQ4CjFCQ2Y2ckhVVzZtM2lIMnB0c3ZuamdMcnVBaVBRUWVwTGUKMTVxc0NtNzh3aHNwTlFGeWRHSlFrNXJleHp4VFFvcG5IWgoxM3pZclloaEp4cDZVaTFWVjdwcWE1V0RoTldNNDVBUkFDCjE0TWRFYjRlRmNUM01WRzVzUEZHNGpHTHVISlNudDFEazIKMUNNcTNTdkZjVkVjcExNdXVIOFBVY05pcXNLMW9pY0cyRAoxS2gyMlB2WEVSZDJ4cFRRazN1cjZwUEVxRmVja0NKZkFyCjFLM3g1TDZHNTdZNDk0ZkRxQmZyb2pEMjhVSnY0czVKY0sKMVB4SDNLMVNoZGpiN2dTRW9UWDdVUERaNlNINHFHUHJ2cQoxNkFiblpqWlppcHdITWtZS0JTZnN3R1dLRG1YSGpFcFNmCjE5UWNpRUhiR1ZOWTRocmhmS1htY0JCQ3JKU0JaNlRhVnQKMUwxMkZISDJGSGp2VHZpeWFudWlGVmZtekN5NDZSUkFUVQoxRXpWSHRtYk40ZnM0TWlOazNwcEVuS0toc21YWUo0czc0CjFBRThOenpnS0U3WWh6N0JXdEFjQUF4aUZNYlBvODJOQjUKMTdRN3R1RzJKd0ZGVTlyWFZqM3VacVJ0aW9IM214MkphZAoxSzZ4R01VYnM2WlRYQm5odzFwaXBwcXdLNndqQld0TnBMCjE5ZVZTRHVpenlkWHhob2hHaDhLaTlXWTlLc0hkU3dvUUMKMTVBTll6ekNwNUJGSGNDblZGelhxeWlicHpnUExXYUQ4YgoxOHl3UHdqMzluR2pxQnJRSlN6WlZxMml6UjEyTURwRHI4CjFDYUJWUHJ3VXhiUVlZc3d1MzJ3N01qNEhSNG1hTm9KU1gKMUpXbkU2cDZVTjdaSkJON1R0Y2JORG9SY2pGdHVEV29OTAoxS0NnTXY4Zm8yVFBCcGRkVmk5anFtTW1jbmU5dVNOSjVGCjFDS0NWZGJESmFzWW1oc3dCNkhLWkhFQW5OYURwSzdXNG4KMVBYdjI4WXhtWU1hQjh6eHJLZVpCVzhkdDJISzdSa1JQWAoxQWNBbUI2am10VTZBaUVjWGttaU5FOVROVlBzajlEVUxmCjFFUUp2cHNtaGF6WUNjS1g1QXU2QVptWktSbnphck1WWnUKMUNNanNjS0IzUVc3U0R5UTRjM0MzREVVSGlIUmhpWlZpYgoxOEtzZnVIdXpRYUJUTkxBU3lqMTVoeTRMdXFQVW8xRk5CCjE1RUpGQzVaVHM5bmhzZHZTVWVCWGpMQXVZcTNTV2F4VGMKMUhCMWlLVXFlZmZuVnN2UXNicEM2ZE5pMVhLYnlOdXFhbwoxR3ZnQVhWQ2JBOEZCalhmV2lBbXM0eXRGZUpjS3NveWhMCjEySnpZa2tONzZ4a3d2Y1BUNkFXS1p0R1g2dzJMQWdzSmcKMTgyNFpKUTduS0o5UUZUUkJxbjd6N2RIVjVFR3B6VXBIMwoxOEE3TkE5RlRzbkp4V2drb0ZmUEFGYlF6dVF4cFJ0Q29zCjFOZUduMjFkVUREZXFGUTYzeGIyU3BnVXVYdUJMQTRXVDQKMTc0U054ZnFwZE1HWXk1WVFjZkxiU1RLM01STlpFZVBveQoxTkxiSHVKZWJWd1VaMVhxRGpzQXlmVFJVUHdEUWJlbWZ2CjFNbko2aGRodkszN1ZMbXFjZEV3cUMzaUZ4eVdIMlBIVVYKMUtOUmZHV3c3UTlSbXdzYzZOVDV6c2R2RWI5TTJXa2o1WgoxUEpaUHp2R1gxOWE3dHdmNUh5RDJWdk5pUGRITHptOUY2CjFHdUJCaGY2MXJudlJlNEs4enU4dmRRQjNrSHp3RnFTeTcKMTdzMmI5a3N6NXk3YWJVbTkyY0h3RzhqRVBDekszZExuVAoxR0RTdWlUaEVWNjRjMTY2TFVGQzl1RGNWZEdqcWt4S3loCjFNZTNBU1l0NUpDVEFLMlhhQzMyUk1lSDM0UGRwcnJmRHgKMUNkdWZNUUw4OTJBNjlLWGd2NlVOQkQxN3l3V3FZcEt1dAoxQmtrR3NYOVpNNml3TDN6YnFzN0hXQlY3U3Zvc1I2bThOCjFQWEF5VUI4Wm9IM1dEOG41em9BdGhZak4xNXlONUNWcTUKMUFXQ0xaQWpLYlYxUDdBSHZhUE5DS2lCN1pXVkRNeEZpegoxRzZFRnlCUlU4NnNUaE4zU1N0M0dySHUxc0E3dzduemk0CjFNWjJMMWdGckN0a2tuNkRuVFQyZTRQRlVUSHc5Z053YWoKMUh6M3V2M25OWnpCVk1YTEdhZEN1Y2dqaUNzNVc5dmFHegoxRm82NWFLcThzOGlxdU10NndlRjFya3UxbW9XVkVkNVVhCjE2elJQblQ4em53cTQycTdYZU1rWlVoYjFiS3FnUm9neXkKMUtyVTRkSEU1V3JXOHJoV0RzVFJqUjIxcjh0M2RzclMzUgoxN3VEZnA1cjRuNDQxeGtnTEZtaE5vU1cxS1dwNnhWTEQKMTNBM0pydlhtdmc1dzlYR3Z5eVI0SkVKcWlMejhaeVNZMwoxNlJHRm82aGpxOXltNlBqN041SDdMMU5SMXJWUEp5dzJ2CjFVREhQZG92dlI5ODVOcldTa2RXUURFUTF4dVJpVEFMcQoxNW5mMzFKNDZpTHVLMVprVG5xSG83V2dONWNBUkZLM1JBCjFBYjR2ekc2d0VRQkROUU0xQjJidlV6NGZxWFhkRmsyV1QKMUZ6NjNjNzc1VlY5Zk55ajI1ZDlYZnczWUhFNnNLQ3hidAoxUUtCYVU2V0FleWNiM0RiS2JMQmtYN3ZKaWFTOHI0MlhvCjFDRDkxVm05N21MUXZYaHJub01DaGhKeDRUUDlNYVFrSm8KMTVNbksyalhQcVRNVVJYNHhDM2g0bUFaeHlDY2FXV0VERAoxM042NmdDeldXSEVaQnhoVnhHMThQOHd5akVXRjlZb2kxCjFOZXZ4S0RZdURjQ2gxWk1NaTZmdG1Xd0dyWktDNmo3VXgKMTlHcHN6Uk5VZWo1eVlxeFhvTG5iWldLZXczS2RWTGtYZwoxTTdpcGNkWUhleTJZNVJaTTM0TUJicHVnZ2htamFWODlQCjE4YU5odXJFQUpzdzZCQWd0QU5wZXhrNW9iMWFHVHdTZUwKMUZ3Wlh0NkVwUlQ3RmtuZHp2Nks0YjRERm9UNHRyYk1yVgoxQ1h2VHpSNnF2OHdKN2VwcnpVS2VXeHlHY0h3RFlQMWkyCjFNVUpTSll0R1BWR2tCQ1RxR3Nwbnh5SGFocHQ1VGU4ankKMTNRODRUTk52Z2NMM0hKaXFRUHZ5QmI5bTRoeGpTM2prVgoxTHVVSHlyUXI4UEtTdmJjWTF2MVBpdUd1cUZqV3BEdW1OCjE4MTkyWHB6emREaTJLMTFRVkhSN3RkMkhjUFM2UXM1dmcKMU5nVm1zQ0NKYUtMekd5S0xGSmZWZXF1bkZXOVp2bk1MTgoxQW9lUDM3VG1IZEZoOHVONzJmdTlBcWd0THJVd2N2MndKCjFGVHBBYlFhNGg4dHJ2aFFYalhubU5ocWRpR0JkMW9yYUUKMTRKSG9SQWRtSmczWFI0UmpNRGg2V2VkNmZ0Nmh6YlFlOQoxOXo2d2FyYW5FZjhDY1A4RnFOZ2R3VWUxUVJ4dlVOS0JHCjE0dTRuQTVzdWdhc3diNlNaZ241YXYydnVDaGRNbkQ5RTUKMU5CQzh1WEp5MUdpSjZkcmtpWmExV3VLbjUxcHM3RVBUdgoxSmtxQlFjQzR0SGNiMUpmZENINm5yV1l3VFBHem5IQU5oCjE3RFRVVFhVY1VZRWdycjVHaGl2eFllaTRMcnMxeE1uUzIKMUg2ZTdTTHh2NlpVYnVBYVpwZVVkVk5maDNjS0JXSlJteAoxTGpRS3VyTnRFRGdNZHFlQ29XUkZoSHAxRlBuTFU3N1E0CjFGN1pqaWJZdWc5YkxXM1l2a2t3QlpMcmhmTHROamdZclgKMTJCdHZQYWFtaUJDcFhtb0Ryc0N4QWExYjZoTVJuQVNaNAoxQXZMd0dwa3dUWkg0cWl3eTFMNHY2VHVXWExNTnJBVE41CjFQb2pxYmJ6SkhubjFYMm12NkRDRUNOTFVhRDJuTXNzRHAKMUczdWF6djY3QmNLUm1QRnZndlg0aWpCVGEyODk4Y3ZDbQoxRVc5VzVzR2R4VkR4QXRqUmJDamdrWk50UEg4Wnppa2VQCjE3enpNTW5qNWg4U3RMaG5yWHB3OGlCUDIxdXVqTkM0QXAKMTVMSktod1FKN2RZTUJaWDFta3Rza1pxeFgxYVVDaWJrcgoxTWtvZGluM0MzZHJWYVY5Sk5rMW8zaTRuNGdWR2U5R1Z4CjFDNmRIVTFnUXRWVVhabWVYUXVRYzNFZ0RKYmlMYnhGWkoKMUR4Wkp5N0FrcUxWQVE1cnRTVUtmclIzeVBFNXU1eWdrNgoxTmN5dEx3ZHFKYThEc1FQYTlOd2t4SlRRY3gxclp5ODVBCjE2M3ZHOW1LbUFzcnZtcTQyTUJEUGpmOWF4WnlFZ0JjOVIKMTJBVHdBNVZ2b1BEaW5TeW1jUXBDQVhQTEFwQVZMTjI0egoxMmZYYkJFN2tUZnFZazhkWXlVOWJ3N1hmS1Z3RXFYbnpnCjFFa1lzQjFDN2RlV3hpVlVVTGVacHI0MkFkWVdodjRQRVgKMU1QUXloWEJUMkZwVU1DaXY1WVgzeWFjS3ZtYzlQNXg2UwoxR1p5eG1wZ3RSSk5hVzF6RWhQQWE4MXhaREVKU2R3YmJaCjEyRTJIV1FWSHp1R0tBUVZ2UFVrSFd3aWJBSmZubWNIVzEKMTRKMWZYWTJFM2ZieGpwMXpwZnFSaGs1Qk5RNHBiOTdScwoxSHFISHVGelpodFR0eUdiQVdDUzQ5cUduQ0JTRWhCU0ZUCjFCSlhCRHQ0ZTF1YW9yWFBvdG90dWNVR05SbWU1N25BcXQKMTljdDdFZ2ZpNWo2alNlZmo4WDRkNWVYSlFVbXlodFhqQwoxRHlXU1kxZEEzd3lqbzRlTXVRQ1Bmcm0zZFY5NnhERFNVCjFQaUxyRHllWHRuY25zdmNWQUdHY05ucHpRVlJDRzNmd1MKMUhVb1l6b0VuMmE0V3hLdm5ZWWJuUjlHS3JWcUFmcTdvWQoxOXZuTUU4YjI4U3pKRHVFRk5TaEFHNUpDUjYzVjF6elYKMUdXVEV2NzZDOGN1c3E0aDVnVjNyTGplRmhCa0dCSFNLZwoxTkhoMmZRRG03S3lCczhIUkZrVnRIZ016a211Zms2bU5XCjFvVzhWRlJOVktoYnp6cThOV051dERZRHp2MUN6QUhBagoxNnExNXRwYUhRRlVFTlVtUlBMZ2lpZENNV0xjRHBWRWdzCjFBSDRkOEJzczZlRnl1Z1phTjJxUFhNQkg2OVQ5NDZkU0sKMTJnRFB1SHZaQmg2RlNqeWhIaHlERGtNMzhZMnd5REdRdAoxMmpGUndaRlVyeFVUdHV5Vnp3OUZOSnNKYTdtakJnZmNhCjFCTmtGTlUzZUp6OGpEZlRrVHdlN1htRjE4QmZRd2ZxVzcKMURFREVLSlZFbVh2RXF3ZzN3YnE4YzFaTm9ibzR0Tnc0aAoxREEyUmV4cU5rYlZoemZrbVFESFJNZktyZGVzZ3lNTWRRCjE5SG81WUI2eThxUkNkVU14V3BYcXJtOE40QUtBcTdaV1MKMURWV243UHVSQm1zZFRCS2lib0JkU1JFSGRBdFNvTjZCQgoxNENNVTZxdnY1NVk3eEpkVnc2NGV5NXlmVVA0QlpBamN0CjFESEw1TnVYUGp3RHNOblh5ekFnWlRBTU00YVlVYzF6RlcKMVV3c0VQTUYxTlpUV0pBdXltc0xWSnBxZXRCWjNROXNKCjE2YUVMRjFmNzVvNDY0Wmh0QVpVd2JjNGN0RlFaeFM4cWkKMTVUSjN3UHZkdml1cHZLUUZtOGhMZVhTemVNU3E3TFNKMgoxSmdyR29RYnZKUzdVblg2ajRteWlDeG82UTNneW81VWprCjE0WG01RGpCVVFUSkN6ZUdoeXJoVnN4a0s4cDM1c3JrMVMKMTl5aFNvemE4b0szaW9DU3lkTXVBR0pzNE1tM0Z3Q1RodAoxSlh3OWk4ZEVaR0gyOW1VaXVLaldYSzlMMjdyMlRlckxRCjFDTk50aDQzdWlWeXB4SG1aTEM4aFdac2I3VWlQN3dTa1kKMTZvY1ZlWkRwcWN2eU12ekFIMXIyTFI3NXVFelJoa3lWMgoxNXgzdFJWeW45U1JheGZiRlV6cUVUbUNKaXo0NlZzMjQ3CjE5N0s3TWRZaG5OODhnY0pvdUpSeE1pU0FISGZXdVByWEMKMU1Ec05ZZkM0TEVyZ3dVRHFmUTVCZ0ZKcXY1YnM0RnJrbgoxQkRUWG1peXl6cTlpNzlSR0dUVzdjam1ZSmJ4S29WMjdlCjFFaUo1OUxQV0Rlelh3ZkFHRlRjb0VLZE5odlJUcmlCWHkKMXJpclY0WTJOeEd3S05RTm9qSmh6NjFqRWN0bmk4ZnZiCjFOeGdXbnRBZE11Z1NORkhFWFlpell3azNVanhLUHhjREYKMTdBNzV2RWtQUFZlWTlNTU1YVVk5TTJKVUhiYk55VkFXQwoxTlVWQlhnWDM1VWF4NGZwemlWN1ZHTUp5amkzbVV6WmJ0CjFGNnl4Y2JEemp1bWVONzdEaUFCTVh6UGN2dEFkbmFvUEYKMTZZdkdFWWhBd2pmMmR1d3ZIOGpiRk1mVkNuWTZYaVFUcQoxSHRiWmc5bVBqWWNNRE1ETnlYYUZqSFg1ZTdaUFV3V0FwCjE1YTluWHBqblF6dzJvNWttdkd5S3p2N2FuWmtZRkh3ZEsKMTh6c1FLOGV6VDMycUNxZ0xKUU1raHF5S053cENQM0pVMwoxQWFCaHBUbmZDaW45bkNyYWkybXNYekNIb1Ztd2tBZTJOCjEzSnRtMW1tMzNVa2U3UGJtVEJZR05aR1U3clhVc1ZzM2UKMThhQlhSY3RWcldOOW5hREdoS3JMZFpWaU5mTEpmQ2RiRgoxTUVFamQ5OXBrRXlDZGlxVlNDYThKcWphdW43ZnNFWGFHCjFObmVmVEVlS1FRQXRzMzdjUUh6Vng4b1ByVXU4TFd5VUsKMUZZYkxjdXRtUmJ2dTR5VWVMbUM0VEVTMlEzQ2hoWFlZCjFQcDYxVGZrenRaOWNrcGRlVVZDemJ5QTd2TXFYQVZzZFYKMVB5dGJRelJhZjllVHBHYXgzYzZvZkt3dGJ4YUxMU055MQoxOTRiUnROUVZScTR4aTI2VUpaWVRIZXh2TFhpanB6cDNlCjFEeEJ2elJNZHZ6b3AyMURobkRKdjR4SkRZRkdWdHU3S1oKMVFMSEx2TTZYS3d5Z3lXcW8yY0NQYmZiZjZ3b1p6R0VLSAoxQzhIdzZUNWp5cHo5MmNORnI5TGt4NFhtcjREdFA3ekdBCjFMN1pOeDVnRlB2ZFZQZmRnRkJuRVVnQTY0d29Rd29wcXIKMUVNaFRiQzRLcDhEWUJrNXpvTHNUcVoyWWFraGlUZ1FZaAoxOUNxbUJCSjNIOEZqeFNTZVNqdjJLbjFjVlFGWE1ZNkFNCjFLTUhEckNHaG8yUXVLNTlVTnZmanVpUGREWlNnUmJuZUMKMUh6cG1uSHhwdTR0Q0oyM1pTOVRmV0NvWDhtWGZwZEhpcQoxTHJyTlAyOFBZZzFOMXo1VW8xZ1I4Y21vUGM4aDRvckJaCjE0RDJkM1duSFRoVXh5UGhHb2oyQWFiQlR4cFpjb0h5M3QKMThvcXJkUDZ1QktzbjU3Z3ZtV3pMdUtNQVk0U2hhcGlBVQoxQnVuNFZ6dUJKN1NVb1FuOTdkaW5WZkR5V0FTMzM2TGRnCjFSdXUzSnd2R2VTbWhRVjlHeldBbnlMQ3o2ZzNldm1UWQoxTTN1NHE1UTM1cXRRUG1ESGV1YlZiazdBUFlpM1ZWb0JYCjFDYVR4QjNZd21YWmtEblRLNHJSdnE2MVNScXM0OHhtdWkKMUpxUnFVUEhIY1F1MnlycjhKWnp4U1lEeDJqYlp4RXFGagoxTktrakZ2WG1vdm1qd2dVdWp3NjU1bjNCYkV2bm5jeXphCjE3UEVVdlFtZ3FQa2t2UmtNb3dvUjF3UkRYWXpyZTRiOVoKMUZNY290bW5xcUU1TTJ4OUREWDNWZlBBUHVCV0FyR2lzYQpgLnRyaW0oKS5zcGxpdCgvXHMrLyk7Cg=="></script>
-  <script>
-    (function(){
-      var links=[].slice.call(document.querySelectorAll('.rail a'));
-      var sections=links.map(function(a){return document.querySelector(a.getAttribute('href'));}).filter(Boolean);
-      function mark(){
-        var y=window.scrollY+120, current=sections[0];
-        sections.forEach(function(s){if(s.offsetTop<=y) current=s;});
-        links.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+current.id);});
-      }
-      window.addEventListener('scroll',mark,{passive:true}); mark();
-    }());
 
-    var puzzleAddresses = window.puzzleAddresses || [];
-    var laterSolveDates = {
-      51:'05 Apr 2017',52:'21 Apr 2017',53:'04 Sep 2017',54:'16 Nov 2017',55:'29 May 2018',56:'08 Sep 2018',57:'08 Nov 2018',58:'03 Dec 2018',59:'11 Feb 2019',60:'17 Feb 2019',61:'11 May 2019',62:'08 Sep 2022',63:'12 Jul 2019',64:'09 Sep 2022',65:'07 Jun 2019',66:'12 Sep 2024',67:'21 Feb 2025',68:'06 Apr 2025',69:'30 Apr 2025',70:'09 Jun 2019',75:'10 Jun 2019',80:'11 Jun 2019',85:'17 Jun 2019',90:'01 Jul 2019',95:'06 Jul 2019',100:'08 Jul 2019',105:'23 Sep 2019',110:'30 May 2020',115:'16 Jun 2020',120:'27 Feb 2023',125:'09 Jul 2023',130:'23 Sep 2024',135:'28 Jul 2026'
-    };
-    var openBalances = {
-      71:'7.10182686',72:'7.20014379',73:'7.30013849',74:'7.40004977',76:'7.60000000',77:'7.70002426',78:'7.80000000',79:'7.90000000',81:'8.10001500',82:'8.20000000',83:'8.30002046',84:'8.40001500',86:'8.60000000',87:'8.70000000',88:'8.80000000',89:'8.90000000',91:'9.10000000',92:'9.20000000',93:'9.30000000',94:'9.40000000',96:'9.60000600',97:'9.70002613',98:'9.80000000',99:'9.91257338',101:'10.10000000',102:'10.20000000',103:'10.30000000',104:'10.40001600',106:'10.60000000',107:'10.70000000',108:'10.80000000',109:'10.90010500',111:'11.10010000',112:'11.20000000',113:'11.30000000',114:'11.40000000',116:'11.60001210',117:'11.70000000',118:'11.80000661',119:'11.90000000',121:'12.10000000',122:'12.20000000',123:'12.30000000',124:'12.40000000',126:'12.60000000',127:'12.70000000',128:'12.80000000',129:'12.90000000',131:'13.10000000',132:'13.20000000',133:'13.30000000',134:'13.40000000',136:'13.60000000',137:'13.70000000',138:'13.80000000',139:'13.90000000',140:'14.00001600',141:'14.10014846',142:'14.20000000',143:'14.30000000',144:'14.40000000',145:'14.50000600',146:'14.60000000',147:'14.70000000',148:'14.80000000',149:'14.90001000',150:'15.00001600',151:'15.10001000',152:'15.20001000',153:'15.30001000',154:'15.40001000',155:'15.50011600',156:'15.60001000',157:'15.70001000',158:'15.80001000',159:'15.90002600',160:'16.00119082'
-    };
-    var lateSolved = new Set([75,80,85,90,95,100,105,110,115,120,125,130,135]);
-    var ledgerRows = document.getElementById('ledgerRows');
-    var ledgerSearch = document.getElementById('ledgerSearch');
-    var ledgerFilter = document.getElementById('ledgerFilter');
-    var ledgerCount = document.getElementById('ledgerCount');
-    var ledgerEmpty = document.getElementById('ledgerEmpty');
-    var ledgerRendered = false;
+  <div id="puzzleModal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-backdrop" data-modal-close></div>
+    <div class="modal-card" tabindex="-1">
+      <button type="button" class="modal-close" data-modal-close aria-label="Close">×</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
 
-    function solveDate(n){
-      if(n >= 3 && n <= 28) return '15 Jan 2015';
-      if(n >= 29 && n <= 33) return '16 Jan 2015';
-      if(n >= 34 && n <= 36) return '17 Jan 2015';
-      if(n === 37) return '18 Jan 2015';
-      if(n === 38) return '19 Jan 2015';
-      if(n === 39) return '21 Jan 2015';
-      if(n >= 40 && n <= 46) return '30 Jan 2015';
-      if(n >= 47 && n <= 50) return '01 Sep 2015';
-      return laterSolveDates[n] || '';
-    }
-    function puzzleState(n){
-      if(n <= 2) return 'preused';
-      if(n <= 70 || lateSolved.has(n)) return 'solved';
-      if(n <= 160) return 'open';
-      return 'retired';
-    }
-    function hasPublicKey(n){ return n >= 65 && n <= 160 && n % 5 === 0; }
-    function rangeFor(n){
-      var start = 1n << BigInt(n - 1);
-      var end = (1n << BigInt(n)) - 1n;
-      return start.toString(16) + ' — ' + end.toString(16);
-    }
-    function recordFor(n,state){
-      if(state === 'preused') return 'Known before puzzle · not a solve';
-      if(state === 'solved') return 'Swept ' + solveDate(n) + (hasPublicKey(n) ? ' · public key exposed' : '');
-      if(state === 'open') return hasPublicKey(n) ? 'Public key exposed · kangaroo' : 'Address only · brute force';
-      return 'Creator sweep · 11 Jul 2017';
-    }
-    function renderLedger(){
-      var raw = ledgerSearch.value.trim().toLowerCase().replace(/^#/,'');
-      var filter = ledgerFilter.value;
-      var numeric = /^\d+$/.test(raw) ? Number(raw) : null;
-      var visible = puzzleAddresses.map(function(address,index){
-        var n=index+1;
-        return {n:n,address:address,state:puzzleState(n)};
-      }).filter(function(item){
-        var textMatch = !raw || (numeric !== null ? item.n === numeric : item.address.toLowerCase().indexOf(raw) !== -1);
-        var stateMatch = filter === 'all' || item.state === filter || (filter === 'emptied' && (item.state === 'solved' || item.state === 'preused')) || (filter === 'public' && hasPublicKey(item.n));
-        return textMatch && stateMatch;
-      });
-      var labels = {open:'OPEN',solved:'SOLVED',preused:'PRE-USED',retired:'RETIRED'};
-      ledgerRows.innerHTML = visible.map(function(item){
-        return '<article class="ledger-grid ledger-row">'+
-          '<div class="ledger-num" data-label="LOT">#'+item.n+'</div>'+
-          '<div class="ledger-address" data-label="ADDRESS">'+item.address+'</div>'+
-          '<div class="ledger-range" data-label="KEY RANGE · HEX">'+rangeFor(item.n)+'</div>'+
-          '<div class="ledger-original" data-label="BALANCE*">'+(item.state === 'open' ? openBalances[item.n] : '0.00000000')+' BTC<small>original '+(item.n/1000).toFixed(3)+'</small></div>'+
-          '<div data-label="STATUS"><span class="state state-'+item.state+'">'+labels[item.state]+'</span></div>'+
-          '<div class="ledger-record" data-label="RECORD">'+recordFor(item.n,item.state)+'</div>'+
-        '</article>';
-      }).join('');
-      ledgerCount.textContent = visible.length + (visible.length === 1 ? ' row' : ' rows');
-      ledgerEmpty.hidden = visible.length !== 0;
-      ledgerRendered = true;
-    }
-    ledgerSearch.addEventListener('input',renderLedger);
-    ledgerFilter.addEventListener('change',renderLedger);
-
-    function syncPage(){
-      var showLedger = location.hash === '#ledger';
-      document.getElementById('dossier').hidden = showLedger;
-      document.getElementById('ledger').hidden = !showLedger;
-      [].slice.call(document.querySelectorAll('[data-page-link]')).forEach(function(link){
-        var active = link.dataset.pageLink === (showLedger ? 'ledger' : 'dossier');
-        link.classList.toggle('active',active);
-        if(active) link.setAttribute('aria-current','page'); else link.removeAttribute('aria-current');
-      });
-      if(showLedger && !ledgerRendered) renderLedger();
-    }
-    window.addEventListener('hashchange',syncPage);
-    syncPage();
-  </script>
+  <script src="js/addresses.js"></script>
+  <script src="js/crypto.js"></script>
+  <script src="js/puzzle-data.js"></script>
+  <script src="js/price.js"></script>
+  <script src="js/modal.js"></script>
+  <script src="js/ledger.js"></script>
+  <script src="js/cracker.js"></script>
+  <script src="js/home.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
