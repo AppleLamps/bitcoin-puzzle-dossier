@@ -6,6 +6,7 @@
   var resumeState = null;      // per-worker resume maps after a stop
   var bench = null;            // {rate, threads}: measured keys/s and the thread count it was measured on
   var busy = false;            // true while a benchmark is running
+  var benchWorkers = [];       // benchmark pool, so teardown can terminate it too
   var MAX_CORES = Math.max(1, Math.min(32, navigator.hardwareConcurrency || 2));
   var PER_CORE_GUESS = 110000;
 
@@ -60,7 +61,10 @@
     el.lotstate.innerHTML = st;
     var rate = expectedRate();
     var full = Number(size) / rate, half = full / 2;
-    el.eta.textContent = 'At ' + fmt(Math.round(rate)) + ' keys/s on ' + threadsSelected() + ' thread' + (threadsSelected()>1?'s':'') + ': expected ' + dur(half) + ', worst case ' + dur(full) + (bench ? (bench.threads === threadsSelected() ? ' (benchmarked)' : ' (scaled from a ' + bench.threads + '-thread benchmark)') : ' (estimate; run the benchmark)');
+    var lead = 'At ' + fmt(Math.round(rate)) + ' keys/s on ' + threadsSelected() + ' thread' + (threadsSelected()>1?'s':'') + ': ';
+    el.eta.textContent = lead + (el.mode.value === 'random'
+      ? '50% odds after ' + dur(full * Math.LN2) + ', one keyspace of samples in ' + dur(full) + '; random sampling never guarantees completion'
+      : 'expected ' + dur(half) + ', worst case ' + dur(full)) + (bench ? (bench.threads === threadsSelected() ? ' (benchmarked)' : ' (scaled from a ' + bench.threads + '-thread benchmark)') : ' (estimate; run the benchmark)');
     el.custom.placeholder = r.start;
     el.customWrap.hidden = el.mode.value !== 'custom';
     [].slice.call(el.quick.querySelectorAll('button')).forEach(function(b){ b.classList.toggle('active', Number(b.dataset.lot) === n); });
@@ -130,7 +134,21 @@
     var target;
     try { target = C.addressToHash160(run.item.address); } catch(err){ setStatus('Could not decode address: ' + err.message, 'bad'); return; }
     current = run; totals = []; killWorkers();
-    var states = [], stopped = 0, exhausted = 0, stopMaps = [];
+    var states = [], terminal = 0, exhaustedCount = 0, stopMaps = [], stopping = false;
+    function finalize(){
+      pausedElapsed = elapsed(); killWorkers(); setRunning(false);
+      if(stopping && exhaustedCount < run.cores){
+        resumeState = run.mode === 'sequential' ? { n:run.n, mode:run.uiMode, run:run, maps:stopMaps, checked:totalChecked(), elapsed:pausedElapsed } : null;
+        el.resume.hidden = !resumeState;
+        setStatus('Stopped after ' + fmtBig(totalChecked()) + ' keys.' + (resumeState ? ' You can resume from exactly where each thread was.' : ''), 'idle');
+        log('Stopped lot #' + run.n + ' at ' + fmtBig(totalChecked()) + ' keys');
+      } else {
+        resumeState = null; el.resume.hidden = true;
+        setStatus('Range exhausted with no match.' + (run.uiMode === 'custom' ? ' The key is below your start point, or the address is not in this lot.' : ' Every key in the sweep was tested.'), 'bad');
+        log('Sweep of lot #' + run.n + ' exhausted after ' + fmtBig(totalChecked()) + ' keys');
+      }
+    }
+    current.markStopping = function(){ stopping = true; };
     for(var i=0;i<run.cores;i++) states.push({});
     renderThreads(states);
     el.workers.textContent = run.cores + (run.cores === 1 ? ' thread' : ' threads');
@@ -145,7 +163,7 @@
         totals[idx] = 0n;
         w.onmessage = function(e){
           var m = e.data;
-          if(m.type === 'progress'){ totals[idx] = BigInt(m.checked); states[idx] = { current:m.current, lanes:m.lanes }; if(idx === 0) renderThreads(states); }
+          if(m.type === 'progress'){ totals[idx] = BigInt(m.checked); states[idx] = { current:m.current, lanes:m.lanes }; renderThreads(states); }
           else if(m.type === 'found'){
             totals[idx] = BigInt(m.checked); resumeState = null; el.resume.hidden = true;
             pausedElapsed = elapsed(); killWorkers(); setRunning(false);
@@ -153,19 +171,12 @@
             log('<b>Hit on lot #' + run.n + '</b> by thread ' + (idx+1) + ' after ' + fmtBig(totalChecked()) + ' keys', 'hit');
             showResult(m, run);
           }
-          else if(m.type === 'exhausted'){
+          else if(m.type === 'exhausted' || m.type === 'stopped'){
+            // Both are terminal for this worker. An exhausted worker contributes an empty resume map so the others can still resume.
             totals[idx] = BigInt(m.checked);
-            if(++exhausted >= run.cores){ pausedElapsed = elapsed(); killWorkers(); setRunning(false); resumeState = null; el.resume.hidden = true;
-              setStatus('Range exhausted with no match.' + (run.uiMode === 'custom' ? ' The key is below your start point, or the address is not in this lot.' : ' Every key in the sweep was tested.'), 'bad');
-              log('Sweep of lot #' + run.n + ' exhausted after ' + fmtBig(totalChecked()) + ' keys'); }
-          }
-          else if(m.type === 'stopped'){
-            totals[idx] = BigInt(m.checked); stopMaps[idx] = m.resume;
-            if(++stopped >= run.cores){ pausedElapsed = elapsed(); killWorkers(); setRunning(false);
-              resumeState = run.mode === 'sequential' ? { n:run.n, mode:run.uiMode, run:run, maps:stopMaps, checked:totalChecked(), elapsed:pausedElapsed } : null;
-              el.resume.hidden = !resumeState;
-              setStatus('Stopped after ' + fmtBig(totalChecked()) + ' keys.' + (resumeState ? ' You can resume from exactly where each thread was.' : ''), 'idle');
-              log('Stopped lot #' + run.n + ' at ' + fmtBig(totalChecked()) + ' keys'); }
+            states[idx] = { current:null, lanes:0 }; renderThreads(states);
+            if(m.type === 'exhausted'){ exhaustedCount++; stopMaps[idx] = {}; } else { stopMaps[idx] = m.resume || {}; }
+            if(++terminal >= run.cores) finalize();
           }
         };
         w.onerror = function(err){ killWorkers(); setRunning(false); setStatus('Worker error: ' + err.message, 'bad'); log('Worker error: ' + esc(err.message), 'hit'); };
@@ -191,14 +202,16 @@
     // carry the earlier count forward so totals keep climbing
     var carry = prior; totals.push(carry);
   }
-  function stop(){ if(!running) return; setStatus('Stopping…', 'idle'); workers.forEach(function(w){ w.postMessage({ type:'stop' }); }); }
+  function stop(){ if(!running) return; setStatus('Stopping…', 'idle'); if(current && current.markStopping) current.markStopping(); workers.forEach(function(w){ w.postMessage({ type:'stop' }); }); }
   function benchmark(){
     if(running || busy) return;
     setBusy(true); setStatus('Benchmarking ' + threadsSelected() + ' thread' + (threadsSelected()>1?'s':'') + ' for 3 seconds…', 'run');
     var n = threadsSelected(), done = 0, keys = 0, ws = [];
+    benchWorkers = ws;
     for(var i=0;i<n;i++){
       var w = new Worker('js/cracker-worker.js');
-      w.onmessage = function(e){ if(e.data.type !== 'bench') return; keys += e.data.keys / (e.data.ms/1000); if(++done === n){ ws.forEach(function(x){ x.terminate(); }); bench = { rate: Math.round(keys), threads: n }; setBusy(false); setStatus('Benchmark: ' + fmt(bench.rate) + ' keys/s across ' + n + ' thread' + (n>1?'s':'') + '. Estimates now use this figure.', 'idle'); log('Benchmark ' + fmt(bench.rate) + ' keys/s on ' + n + ' thread' + (n>1?'s':'')); describe(); } };
+      w.onerror = function(err){ ws.forEach(function(x){ x.terminate(); }); benchWorkers = []; setBusy(false); setStatus('Benchmark worker error: ' + err.message, 'bad'); };
+      w.onmessage = function(e){ if(e.data.type !== 'bench') return; keys += e.data.keys / (e.data.ms/1000); if(++done === n){ ws.forEach(function(x){ x.terminate(); }); benchWorkers = []; bench = { rate: Math.round(keys), threads: n }; setBusy(false); setStatus('Benchmark: ' + fmt(bench.rate) + ' keys/s across ' + n + ' thread' + (n>1?'s':'') + '. Estimates now use this figure.', 'idle'); log('Benchmark ' + fmt(bench.rate) + ' keys/s on ' + n + ' thread' + (n>1?'s':'')); describe(); } };
       w.postMessage({ type:'bench', ms:3000 }); ws.push(w);
     }
   }
@@ -231,7 +244,16 @@
     if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function(){ window.prompt('Copy:', text); });
     else window.prompt('Copy:', text);
   }
+  function teardown(){
+    // Terminate every pool and reset state so a page restored from the back/forward cache can start again.
+    killWorkers();
+    benchWorkers.forEach(function(w){ w.terminate(); }); benchWorkers = [];
+    if(running){ pausedElapsed = elapsed(); setRunning(false); setStatus('Run ended when the page was hidden.', 'idle'); }
+    if(busy) setBusy(false);
+    resumeState = null; el.resume.hidden = true;
+  }
   function applyPreset(){
+    if(running || busy) return false; // never retarget mid-run; the quick picks ignore clicks the same way
     var m = location.hash.match(/^#crack-(\d+)$/);
     if(m && Number(m[1]) >= 1 && Number(m[1]) <= 160){ el.puzzle.value = m[1]; describe(); return true; }
     return false;
@@ -256,7 +278,7 @@
     el.bench.addEventListener('click', benchmark);
     el.resultBody.addEventListener('click', onCopy);
     window.addEventListener('hashchange', applyPreset);
-    window.addEventListener('pagehide', killWorkers);
+    window.addEventListener('pagehide', teardown);
     log('Engine ready · ' + MAX_CORES + ' logical core' + (MAX_CORES>1?'s':'') + ' detected');
   });
   window.Cracker = { start:start, stop:stop, resume:resume };
