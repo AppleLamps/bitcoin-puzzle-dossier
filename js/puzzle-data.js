@@ -36,6 +36,17 @@
   }
   function rangeFor(n){ var r = rangeHex(n); return r.start + ' — ' + r.end; }
   function keyspaceSize(n){ return (1n << BigInt(n - 1)).toString(); }
+  // Scanner-only overrides. The ledger and puzzle pages keep the canonical [2^(N-1), 2^N) range;
+  // the web scanner sweeps the narrower window listed here instead when one exists.
+  var scanOverrides = {
+    71: { start: '680000000000000000', end: '6bffffffffffffffff' }
+  };
+  function scanRange(n){
+    var o = scanOverrides[n];
+    var lo = o ? BigInt('0x' + o.start) : (1n << BigInt(n - 1));
+    var hi = o ? BigInt('0x' + o.end) : ((1n << BigInt(n)) - 1n);
+    return { lo: lo, hi: hi, size: hi - lo + 1n, custom: !!o };
+  }
   function balanceFor(n){ return puzzleState(n) === 'open' ? openBalances[n] : '0.00000000'; }
   function originalFor(n){ return (n/1000).toFixed(3); }
   function recordFor(n,state){
@@ -66,6 +77,7 @@
     rangeHex: rangeHex,
     rangeFor: rangeFor,
     keyspaceSize: keyspaceSize,
+    scanRange: scanRange,
     balanceFor: balanceFor,
     originalFor: originalFor,
     recordFor: recordFor,
