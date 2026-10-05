@@ -52,11 +52,12 @@
     el.threads.innerHTML = t.join('');
   }
   function describe(){
-    var n = Number(el.puzzle.value), it = D.item(n), r = D.rangeHex(n);
-    var size = BigInt(D.keyspaceSize(n));
+    var n = Number(el.puzzle.value), it = D.item(n), sr = D.scanRange(n);
+    var r = { start: sr.lo.toString(16), end: sr.hi.toString(16) };
+    var size = sr.size;
     el.target.textContent = it.address; el.target.href = 'https://mempool.space/address/' + it.address;
     el.range.textContent = '0x' + r.start + ' → 0x' + r.end;
-    el.space.textContent = fmtBig(size) + ' keys (2^' + (n-1) + ')';
+    el.space.textContent = fmtBig(size) + ' keys' + (log2Exact(size) !== null ? ' (2^' + log2Exact(size) + ')' : '');
     var st = it.state === 'open' ? '<span class="state state-open">OPEN</span> ' + it.balance + ' BTC on the line' + (it.publicKey ? ' · public key exposed, kangaroo would need ~2^' + Math.floor(n/2) + ' ops' : '')
            : it.state === 'solved' ? '<span class="state state-solved">SOLVED</span> swept ' + it.solveDate + ' · holds nothing, good for proving the engine'
            : '<span class="state state-preused">PRE-USED</span> not a true puzzle';
@@ -73,6 +74,11 @@
     el.resume.hidden = !(resumeState && resumeState.n === n && resumeState.mode === el.mode.value && !running && !busy);
     try { localStorage.setItem('crk', JSON.stringify({ n:n, mode:el.mode.value, threads:threadsSelected() })); } catch(e){}
   }
+  function log2Exact(v){
+    // Returns k when v === 2^k, otherwise null.
+    if(v <= 0n || (v & (v - 1n)) !== 0n) return null;
+    return v.toString(2).length - 1;
+  }
   function totalChecked(){ return totals.reduce(function(a,b){ return a + b; }, 0n); }
   function elapsed(){ return pausedElapsed + (running ? (Date.now() - startedAt) / 1000 : 0); }
   function tick(){
@@ -84,7 +90,7 @@
     el.rateLabel.textContent = rate ? 'keys per second · ' + fmt(Math.round(rate)) : 'keys per second';
     el.elapsed.textContent = dur(secs);
     if(current){
-      var size = Number(BigInt(D.keyspaceSize(current.n)));
+      var size = Number(D.scanRange(current.n).size);
       var span = Number(current.hi - current.lo + 1n);
       // Random mode samples with replacement, so the chance the key has been hit is 1 - e^(-checked/size), never a sweep.
       var frac = current.mode === 'random' ? 1 - Math.exp(-Number(t) / size) : Number(t) / span;
@@ -123,7 +129,7 @@
 
   function buildRun(){
     var n = Number(el.puzzle.value), it = D.item(n);
-    var lo = 1n << BigInt(n-1), hi = (1n << BigInt(n)) - 1n;
+    var sr = D.scanRange(n), lo = sr.lo, hi = sr.hi;
     var mode = el.mode.value;
     if(mode === 'custom'){
       var raw = el.custom.value.trim().replace(/^0x/i, '');
