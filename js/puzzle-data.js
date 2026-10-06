@@ -36,13 +36,12 @@
   }
   function rangeFor(n){ var r = rangeHex(n); return r.start + ' — ' + r.end; }
   function keyspaceSize(n){ return (1n << BigInt(n - 1)).toString(); }
-  // Scanner-only overrides. The ledger and puzzle pages keep the canonical [2^(N-1), 2^N) range;
-  // the web scanner sweeps the narrower window listed here instead when one exists.
-  var scanOverrides = {
+  // Optional scanner windows. Full canonical coverage is always the default.
+  var scanWindows = {
     71: { start: '680000000000000000', end: '6bffffffffffffffff' }
   };
-  function scanRange(n){
-    var o = scanOverrides[n];
+  function scanRange(n, selection){
+    var o = selection === 'restricted' ? scanWindows[n] : null;
     var lo = o ? BigInt('0x' + o.start) : (1n << BigInt(n - 1));
     var hi = o ? BigInt('0x' + o.end) : ((1n << BigInt(n)) - 1n);
     return { lo: lo, hi: hi, size: hi - lo + 1n, custom: !!o };
@@ -78,6 +77,7 @@
     rangeFor: rangeFor,
     keyspaceSize: keyspaceSize,
     scanRange: scanRange,
+    hasScanWindow: function(n){ return !!scanWindows[n]; },
     balanceFor: balanceFor,
     originalFor: originalFor,
     recordFor: recordFor,

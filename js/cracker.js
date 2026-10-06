@@ -35,7 +35,8 @@
   }
   function setStatus(txt, cls){ el.status.textContent = txt; el.status.className = 'cracker-status ' + (cls || 'idle'); }
   function threadsSelected(){ return Number(el.threads.value) || MAX_CORES; }
-  function expectedRate(){ return bench ? bench.rate / bench.threads * threadsSelected() : PER_CORE_GUESS * threadsSelected(); }
+  function activeBench(){ return bench && bench.mode === (el.mode.value === 'random' ? 'random' : 'sequential') ? bench : null; }
+  function expectedRate(){ var measured = activeBench(); return measured ? measured.rate / measured.threads * threadsSelected() : PER_CORE_GUESS * threadsSelected(); }
 
   function fillSelects(){
     var verify = [], open = [], pub = [];
@@ -52,9 +53,12 @@
     el.threads.innerHTML = t.join('');
   }
   function describe(){
-    var n = Number(el.puzzle.value), it = D.item(n), sr = D.scanRange(n);
+    var n = Number(el.puzzle.value), it = D.item(n);
+    el.windowWrap.hidden = !D.hasScanWindow(n);
+    if(el.windowWrap.hidden) el.window.value = 'full';
+    var sr = D.scanRange(n, el.window.value), measured = activeBench();
     if(resumeState && (resumeState.n !== n || resumeState.mode !== el.mode.value ||
-       resumeState.threads !== threadsSelected() || resumeState.custom !== el.custom.value)){
+       resumeState.threads !== threadsSelected() || resumeState.custom !== el.custom.value || resumeState.window !== el.window.value)){
       resumeState = null;
     }
     var r = { start: sr.lo.toString(16), end: sr.hi.toString(16) };
@@ -70,14 +74,15 @@
     var rate = expectedRate();
     var full = Number(size) / rate, half = full / 2;
     var lead = 'At ' + fmt(Math.round(rate)) + ' keys/s on ' + threadsSelected() + ' thread' + (threadsSelected()>1?'s':'') + ': ';
-    el.eta.textContent = lead + (el.mode.value === 'random'
-      ? '50% odds after ' + dur(full * Math.LN2) + ', one keyspace of samples in ' + dur(full) + '; random sampling never guarantees completion'
-      : 'expected ' + dur(half) + ', worst case ' + dur(full)) + (sr.custom ? '; assumes the key lies inside this restricted window' : '') + (bench ? (bench.threads === threadsSelected() ? ' (benchmarked)' : ' (scaled from a ' + bench.threads + '-thread benchmark)') : ' (estimate; run the benchmark)');
+    el.eta.textContent = lead + 'expected ' + dur(half) + ', full sweep ' + dur(full) +
+      (el.mode.value === 'random' ? '; blocks visited in seeded random order without repeats' : '') +
+      (sr.custom ? '; assumes the key lies inside this restricted window' : '') +
+      (measured ? (measured.threads === threadsSelected() ? ' (benchmarked)' : ' (scaled from a ' + measured.threads + '-thread benchmark)') : ' (estimate; run the benchmark)');
     el.custom.placeholder = r.start;
     el.customWrap.hidden = el.mode.value !== 'custom';
     [].slice.call(el.quick.querySelectorAll('button')).forEach(function(b){ b.classList.toggle('active', Number(b.dataset.lot) === n); });
     el.resume.hidden = !(resumeState && resumeState.n === n && resumeState.mode === el.mode.value && !running && !busy);
-    try { localStorage.setItem('crk', JSON.stringify({ n:n, mode:el.mode.value, threads:threadsSelected() })); } catch(e){}
+    try { localStorage.setItem('crk', JSON.stringify({ n:n, mode:el.mode.value, threads:threadsSelected(), window:el.window.value })); } catch(e){}
   }
   function log2Exact(v){
     // Returns k when v === 2^k, otherwise null.
@@ -95,19 +100,17 @@
     el.rateLabel.textContent = rate ? 'keys per second · ' + fmt(Math.round(rate)) : 'keys per second';
     el.elapsed.textContent = dur(secs);
     if(current){
-      var size = Number(D.scanRange(current.n).size);
       var span = Number(current.hi - current.lo + 1n);
-      // Random mode samples with replacement, so the chance the key has been hit is 1 - e^(-checked/size), never a sweep.
-      var frac = current.mode === 'random' ? 1 - Math.exp(-Number(t) / size) : Number(t) / span;
+      // Both strategies visit each candidate once, so counts measure actual coverage.
+      var frac = Number(t) / span;
       var pct = frac * 100;
       el.progress.style.width = Math.min(100, pct) + '%';
       el.progressbar.setAttribute('aria-valuenow', Math.min(100, pct).toFixed(2));
       el.pct.textContent = pct >= 0.01 ? pct.toFixed(2) + '%' : pct > 0 ? pct.toExponential(2) + '%' : '0%';
-      el.pctlabel.textContent = current.mode === 'random' ? 'chance it was already hit' : 'of this sweep';
-      var isRandom = current.mode === 'random';
-      el.remaining.textContent = isRandom ? (rate ? dur(size * Math.LN2 / rate) : '—') : rate ? dur(Math.max(0, span - Number(t)) / rate) : '—';
+      el.pctlabel.textContent = 'of this sweep';
+      el.remaining.textContent = rate ? dur(Math.max(0, span - Number(t)) / rate) : '—';
       el.remaining.classList.toggle('wrap', el.remaining.textContent.length > 12);
-      el.remainingLabel.textContent = isRandom ? 'to 50% odds · no sweep end' : 'time to finish sweep';
+      el.remainingLabel.textContent = 'time to finish sweep';
     }
   }
   function renderThreads(states){
@@ -117,7 +120,7 @@
   }
   function killWorkers(){ workers.forEach(function(w){ w.terminate(); }); workers = []; }
   function lockControls(on){
-    el.puzzle.disabled = el.mode.disabled = el.custom.disabled = el.threads.disabled = on;
+    el.puzzle.disabled = el.mode.disabled = el.custom.disabled = el.threads.disabled = el.window.disabled = on;
     el.quick.classList.toggle('disabled', on);
     [].slice.call(el.quick.querySelectorAll('button')).forEach(function(b){ b.disabled = on; });
   }
@@ -137,7 +140,7 @@
 
   function buildRun(){
     var n = Number(el.puzzle.value), it = D.item(n);
-    var sr = D.scanRange(n), lo = sr.lo, hi = sr.hi;
+    var sr = D.scanRange(n, el.window.value), lo = sr.lo, hi = sr.hi;
     var mode = el.mode.value;
     if(mode === 'custom'){
       var raw = el.custom.value.trim().replace(/^0x/i, '');
@@ -149,7 +152,7 @@
     var cores = threadsSelected();
     var span = hi - lo + 1n;
     if(span < BigInt(cores) * 256n) cores = 1;
-    return { n:n, item:it, lo:lo, hi:hi, mode:mode, cores:cores, chunk:span / BigInt(cores), uiMode:el.mode.value };
+    return { n:n, item:it, lo:lo, hi:hi, restricted:sr.custom, mode:mode, cores:cores, chunk:span / BigInt(cores), uiMode:el.mode.value };
   }
   function launch(run, resumeMaps){
     var target;
@@ -159,13 +162,13 @@
     function finalize(){
       pausedElapsed = elapsed(); killWorkers(); setRunning(false);
       if(stopping && exhaustedCount < run.cores){
-        resumeState = run.mode === 'sequential' ? { n:run.n, mode:run.uiMode, threads:threadsSelected(), custom:el.custom.value, run:run, maps:stopMaps, checked:totalChecked(), elapsed:pausedElapsed } : null;
+        resumeState = { n:run.n, mode:run.uiMode, threads:threadsSelected(), custom:el.custom.value, window:el.window.value, run:run, maps:stopMaps, checked:totalChecked(), elapsed:pausedElapsed };
         el.resume.hidden = !resumeState;
         setStatus('Stopped after ' + fmtBig(totalChecked()) + ' keys.' + (resumeState ? ' You can resume from exactly where each thread was.' : ''), 'idle');
         log('Stopped puzzle #' + run.n + ' at ' + fmtBig(totalChecked()) + ' keys');
       } else {
         resumeState = null; el.resume.hidden = true;
-        setStatus('Range exhausted with no match.' + (D.scanRange(run.n).custom || run.uiMode === 'custom' ? ' Every key in the selected window was tested; the key may lie elsewhere in the full puzzle range.' : ' Every key in the sweep was tested.'), 'bad');
+        setStatus('Range exhausted with no match.' + (run.restricted || run.uiMode === 'custom' ? ' Every key in the selected window was tested; the key may lie elsewhere in the full puzzle range.' : ' Every key in the sweep was tested.'), 'bad');
         log('Sweep of puzzle #' + run.n + ' exhausted after ' + fmtBig(totalChecked()) + ' keys');
       }
     }
@@ -175,7 +178,7 @@
     el.workers.textContent = String(run.cores);
     startedAt = Date.now();
     setRunning(true);
-    setStatus((resumeMaps ? 'Resumed' : 'Running') + ' · ' + (run.mode === 'random' ? 'random sampling' : 'sequential sweep') + ' on ' + run.cores + ' thread' + (run.cores>1?'s':'') + '.', 'run');
+    setStatus((resumeMaps ? 'Resumed' : 'Running') + ' · ' + (run.mode === 'random' ? 'random block sweep without repeats' : 'sequential sweep') + ' on ' + run.cores + ' thread' + (run.cores>1?'s':'') + '.', 'run');
     for(i=0;i<run.cores;i++){
       (function(idx){
         var w;
@@ -185,6 +188,7 @@
         var wEnd = idx === run.cores-1 ? run.hi : wStart + run.chunk - 1n;
         totals[idx] = 0n;
         w.onmessage = function(e){
+          if(!running || current !== run) return;
           var m = e.data;
           if(m.type === 'progress'){ totals[idx] = BigInt(m.checked); states[idx] = { current:m.current, lanes:m.lanes }; renderThreads(states); }
           else if(m.type === 'found'){
@@ -199,13 +203,15 @@
             // Both are terminal for this worker. An exhausted worker contributes an empty resume map so the others can still resume.
             totals[idx] = BigInt(m.checked);
             states[idx] = { current:null, lanes:0 }; renderThreads(states);
-            if(m.type === 'exhausted'){ exhaustedCount++; stopMaps[idx] = {}; } else { stopMaps[idx] = m.resume || {}; }
+            if(m.type === 'exhausted'){ exhaustedCount++; stopMaps[idx] = run.mode === 'random' ? { done:true } : {}; } else { stopMaps[idx] = m.resume; }
             if(++terminal >= run.cores) finalize();
           }
         };
         w.onerror = fail;
         workers.push(w);
-        try { w.postMessage({ type:'start', target:target.buffer.slice(target.byteOffset, target.byteOffset + 20), start:wStart.toString(), end:wEnd.toString(), mode:run.mode, resumeKeys: resumeMaps ? resumeMaps[idx] : null }); }
+        try { w.postMessage({ type:'start', target:target.buffer.slice(target.byteOffset, target.byteOffset + 20), start:wStart.toString(), end:wEnd.toString(), mode:run.mode,
+          resumeKeys: resumeMaps && run.mode !== 'random' ? resumeMaps[idx] : null,
+          resumeRandom: resumeMaps && run.mode === 'random' ? resumeMaps[idx] : null }); }
         catch(err){ fail(err); }
       }(i));
       if(!running) break;
@@ -236,16 +242,16 @@
   function benchmark(){
     if(running || busy) return;
     setBusy(true); setStatus('Benchmarking ' + threadsSelected() + ' thread' + (threadsSelected()>1?'s':'') + ' for 3 seconds…', 'run');
-    var n = threadsSelected(), done = 0, keys = 0, ws = [];
+    var n = threadsSelected(), mode = el.mode.value === 'random' ? 'random' : 'sequential', done = 0, keys = 0, ws = [];
     benchWorkers = ws;
     for(var i=0;i<n;i++){
       var w;
       try { w = new Worker('/js/cracker-worker.js'); }
       catch(err){ fail(err); break; }
       w.onerror = fail;
-      w.onmessage = function(e){ if(e.data.type !== 'bench') return; keys += e.data.keys / (e.data.ms/1000); if(++done === n){ ws.forEach(function(x){ x.terminate(); }); benchWorkers = []; bench = { rate: Math.round(keys), threads: n }; setBusy(false); setStatus('Benchmark: ' + fmt(bench.rate) + ' keys/s across ' + n + ' thread' + (n>1?'s':'') + '. Estimates now use this figure.', 'idle'); log('Benchmark ' + fmt(bench.rate) + ' keys/s on ' + n + ' thread' + (n>1?'s':'')); describe(); } };
+      w.onmessage = function(e){ if(!busy || benchWorkers !== ws || e.data.type !== 'bench') return; keys += e.data.keys / (e.data.ms/1000); if(++done === n){ ws.forEach(function(x){ x.terminate(); }); benchWorkers = []; bench = { rate: Math.round(keys), threads: n, mode:mode }; setBusy(false); setStatus('Benchmark: ' + fmt(bench.rate) + ' keys/s across ' + n + ' thread' + (n>1?'s':'') + '. Estimates now use this figure.', 'idle'); log('Benchmark ' + fmt(bench.rate) + ' keys/s on ' + n + ' thread' + (n>1?'s':'')); describe(); } };
       ws.push(w);
-      try { w.postMessage({ type:'bench', ms:3000 }); }
+      try { w.postMessage({ type:'bench', ms:3000, mode:mode }); }
       catch(err){ fail(err); break; }
     }
     function fail(err){ ws.forEach(function(x){ x.terminate(); }); benchWorkers = []; setBusy(false); setStatus('Benchmark worker error: ' + err.message, 'bad'); }
@@ -302,7 +308,7 @@
     return false;
   }
   document.addEventListener('DOMContentLoaded', function(){
-    ['puzzle','mode','custom','customWrap','threads','quick','start','stop','resume','bench','status','target','lotstate','range','space','eta','checked','checkedLabel','rate','rateLabel','elapsed','remaining','remainingLabel','workers','pct','pctlabel','progress','progressbar','threadlist','result','resultBody','log'].forEach(function(k){ el[k] = $('crk-' + k); });
+    ['puzzle','mode','custom','customWrap','threads','window','windowWrap','quick','start','stop','resume','bench','status','target','lotstate','range','space','eta','checked','checkedLabel','rate','rateLabel','elapsed','remaining','remainingLabel','workers','pct','pctlabel','progress','progressbar','threadlist','result','resultBody','log'].forEach(function(k){ el[k] = $('crk-' + k); });
     if(!el.puzzle) return;
     el.status.setAttribute('role', 'status');
     el.progressbar.setAttribute('aria-label', 'Puzzle scan progress');
@@ -316,12 +322,14 @@
         if(Number.isInteger(saved.n) && saved.n >= 1 && saved.n <= 160) el.puzzle.value = String(saved.n);
         if(['sequential','random','custom'].indexOf(saved.mode) !== -1) el.mode.value = saved.mode;
         if(Number.isInteger(saved.threads) && saved.threads >= 1) el.threads.value = String(Math.min(saved.threads, MAX_CORES));
+        if(saved.window === 'restricted') el.window.value = 'restricted';
       }
     } catch(e){}
     if(!applyPreset()) describe();
     el.puzzle.addEventListener('change', describe);
     el.mode.addEventListener('change', describe);
     el.threads.addEventListener('change', describe);
+    el.window.addEventListener('change', describe);
     el.custom.addEventListener('input', describe);
     el.quick.addEventListener('click', function(e){ var b = e.target.closest('button[data-lot]'); if(!b || running || busy) return; el.puzzle.value = b.dataset.lot; describe(); });
     el.custom.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ e.preventDefault(); start(); } });

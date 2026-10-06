@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build:wasm": "asc assembly/engine.ts --outFile js/engine.wasm -O3 --noAssert --runtime stub",
-    "test": "npm run build:wasm && node tools/test-wasm-engine.js && node tools/test-engine.js && node tools/test-worker.js && node tools/test-cracker-ui.js"
+    "test": "npm run build:wasm && node tools/test-wasm-engine.js && node tools/test-engine.js && node tools/test-random-blocks.js && node tools/test-worker.js && node tools/test-cracker-ui.js"
   },
   "repository": {
     "type": "git",
