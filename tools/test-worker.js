@@ -24,13 +24,15 @@ function makeWorker(options = {}){
   const vm = require('vm');
   vm.createContext(scope);
   scope.importScripts = p => {
-    vm.runInContext(fs.readFileSync(path.resolve(__dirname, '../js', p), 'utf8'), scope);
-    if(p === 'crypto.js' && options.engine) Object.assign(scope.PuzzleCrypto, options.engine);
+    if(p === 'crypto.js'){
+      scope.PuzzleCrypto = { ...require(path.resolve(__dirname, '../js', p)).PuzzleCrypto };
+      if(options.engine) Object.assign(scope.PuzzleCrypto, options.engine);
+    } else vm.runInContext(fs.readFileSync(path.resolve(__dirname, '../js', p), 'utf8'), scope);
   };
   vm.runInContext(src, scope);
   return {
     postMessage: msg => scope.onmessage({ data: msg }),
-    nextMessage: (pred, timeoutMs = 15000) => new Promise((res, rej) => {
+    nextMessage: (pred, timeoutMs = 30000) => new Promise((res, rej) => {
       const t0 = Date.now();
       (function poll(){
         const i = outbox.findIndex(pred);

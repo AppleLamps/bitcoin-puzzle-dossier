@@ -329,7 +329,7 @@ body.modal-open{overflow:hidden}
 .quickpicks button{cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--muted);padding:7px 10px;border-radius:999px;font:700 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.04em}
 .quickpicks button:hover,.quickpicks button.active{color:var(--ink);border-color:var(--ink);background:var(--paper-2)}
 .quickpicks.disabled button{opacity:.5;pointer-events:none}
-.cracker-page .cracker-controls{grid-template-columns:minmax(0,2fr) minmax(0,1.2fr) minmax(0,.6fr)}
+.cracker-page .cracker-controls{grid-template-columns:minmax(0,2fr) minmax(0,1.2fr) minmax(0,1.5fr) minmax(0,.6fr)}
 .cracker-page #crk-customWrap{grid-column:1/-1}
 .cracker-buttons{display:flex;flex-wrap:wrap;gap:10px}
 .btn-link{display:inline-block;text-decoration:none}

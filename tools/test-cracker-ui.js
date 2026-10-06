@@ -38,6 +38,7 @@ function controller(options = {}){
   document.createElement = () => new Element();
   const get = name => document.getElementById('crk-' + name);
   get('mode').value = 'sequential';
+  get('window').value = 'full';
   get('quick').children = [5, 20, 71].map(n => {
     const button = new Element(); button.dataset = { lot: String(n) }; return button;
   });
@@ -69,7 +70,7 @@ function controller(options = {}){
   function change(name, value, type = 'change'){ get(name).value = value; get(name).dispatch(type); }
   function stop(){
     window.Cracker.stop();
-    for(const worker of workers.filter(w => !w.terminated)) worker.emit({ type: 'stopped', checked: '10', resume: { 0: '8000a' } });
+    for(const worker of workers.filter(w => !w.terminated)) worker.emit({ type: 'stopped', checked: '10', resume: get('mode').value === 'random' ? { order:{ seed:'1a'.repeat(32), blockSize:64, next:'1' }, lanes:[{key:'8000a',end:'8000f'}] } : { 0: '8000a' } });
   }
   return { get, change, workers, window, intervals, stop };
 }
@@ -160,8 +161,30 @@ console.log('UI: only independently verified keys inside the run interval are di
 
 {
   const ui = controller(); ui.change('puzzle', '71');
+  assert.equal(ui.get('windowWrap').hidden, false);
+  assert.match(ui.get('space').textContent, /1,180,591,620,717,411,303,424 keys \(2\^70\)/);
+  assert.doesNotMatch(ui.get('space').textContent, /restricted/);
+  ui.change('window', 'restricted');
   assert.match(ui.get('space').textContent, /restricted scan window/);
   assert.match(ui.get('eta').textContent, /assumes the key lies inside/);
 }
-console.log('UI: restricted windows disclose their coverage and conditional estimates');
+console.log('UI: full #71 range is default and the legacy 6.25% window is explicit');
+
+{
+  const ui = controller(); ui.change('puzzle', '71'); ui.change('mode', 'random');
+  assert.match(ui.get('eta').textContent, /without repeats/);
+  ui.window.Cracker.start();
+  const message = ui.workers[0].messages[0];
+  const lastMessage = ui.workers[3].messages[0];
+  assert.equal(message.mode, 'random');
+  assert.equal(message.start, String(1n << 70n));
+  assert.equal(lastMessage.end, String((1n << 71n) - 1n));
+  ui.stop();
+  assert.equal(ui.get('resume').hidden, false);
+  const count = ui.workers.length;
+  ui.window.Cracker.resume();
+  assert.equal(ui.workers.length, count + 4);
+  assert.ok(ui.workers.slice(count).every(worker => worker.messages[0].resumeRandom));
+}
+console.log('UI: random block sweeps use the full range and preserve random checkpoints');
 console.log('UI: ALL CHECKS PASSED');

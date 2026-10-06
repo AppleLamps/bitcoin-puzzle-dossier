@@ -1,7 +1,9 @@
 // A seeded permutation schedules every block once without storing a shuffled list.
 // Six balanced Feistel rounds use SHA-256; cycle walking handles any block count.
 (function(root){
-  var DEFAULT_BLOCK_SIZE = 65536;
+  // Benchmarks on the current limb-field engine put 2^18 keys near the best
+  // balance between randomized coverage and scalar-multiplication setup cost.
+  var DEFAULT_BLOCK_SIZE = 262144;
   function seedBytes(hex){
     if(!/^[0-9a-f]{64}$/i.test(hex)) throw new Error('Invalid random block seed');
     var bytes = new Uint8Array(32);

@@ -121,7 +121,7 @@
             <p>There is no trick. Every solve so far has been raw computation, so the question is only how many keys per second you can test and how lucky you are.</p>
             <details open><summary>Address-only puzzles: brute force<span>#71–#160 except every fifth</span></summary><div class="detail-body">
               <p>You only know the address, so each candidate key needs a full elliptic-curve multiplication plus two hashes. GPU tools such as BitCrack, KeyHunt-Cuda and VanitySearch-style kernels do this at a few hundred million to a few billion keys per second per card. Puzzle 71 needs on average 2^69 tests, about 590 quintillion. At one billion keys per second that is around 18,700 years for one card.</p>
-              <p>Random sampling versus sequential scanning does not change your expected time. It only changes whether you duplicate work with other solvers scanning from the bottom.</p>
+              <p>A randomized block sweep visits every block once in a seeded order, so it avoids repeats within your run and can resume exactly. It does not change the expected time, and separate browsers can still overlap unless they coordinate their ranges.</p>
             </div></details>
             <details><summary>Public-key puzzles: Pollard’s kangaroo<span>#140, #145, #150, #155, #160</span></summary><div class="detail-body">
               <p>When the public key is known the problem becomes a discrete logarithm in a bounded interval. Kangaroo (JeanLucPons’ CUDA implementation is the standard) solves an N-bit interval in about 2·√(2^N) group operations. Puzzle 140 needs on the order of 2^71 operations, which is why #130 fell in 2024 to a large GPU pool and #135 fell in July 2026. Puzzle 140 is the current frontier; expect it to take a cluster, not a desktop.</p>
@@ -407,7 +407,8 @@
             </div>
             <div class="cracker-controls">
               <label class="ledger-field">PUZZLE<select id="crk-puzzle"></select></label>
-              <label class="ledger-field">STRATEGY<select id="crk-mode"><option value="sequential">Sequential from range start</option><option value="random">Random sampling</option><option value="custom">Sequential from custom start</option></select></label>
+              <label class="ledger-field">STRATEGY<select id="crk-mode"><option value="sequential">Sequential from range start</option><option value="random">Random block sweep · no repeats</option><option value="custom">Sequential from custom start</option></select></label>
+              <label class="ledger-field" id="crk-windowWrap" hidden>SEARCH RANGE<select id="crk-window"><option value="full">Full puzzle range</option><option value="restricted">Legacy 0x680…–0x6bf… window (6.25%)</option></select></label>
               <label class="ledger-field" id="crk-customWrap" hidden>START KEY · HEX<input id="crk-custom" type="text" spellcheck="false" autocomplete="off" inputmode="text"></label>
               <label class="ledger-field">THREADS<select id="crk-threads"></select></label>
             </div>

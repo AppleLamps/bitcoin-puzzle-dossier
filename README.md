@@ -18,6 +18,7 @@ The 2015 Bitcoin Puzzle Transaction remains one of the most recognizable private
 - Full 256-address ledger with filters, puzzle metadata, and clickable rows
 - Dedicated case-file section covering the creator investigation and leading theories
 - In-browser cryptographic engine using a self-contained secp256k1 implementation
+- Seeded random block sweeps with no repeated blocks and exact stop/resume checkpoints
 - Privacy-preserving operation: the web cracker runs entirely on the user’s device
 
 ## Project structure
@@ -62,6 +63,8 @@ then runs the JavaScript engine, worker, and cracker controller regression tests
 JavaScript engine.
 
 The web cracker performs all key generation and validation locally; it does not transmit keys to any backend.
+Puzzle #71 now defaults to its complete canonical range. Its former 6.25% scan
+window remains available as an explicitly labeled range option.
 
 ## Deployment
 
