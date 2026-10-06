@@ -564,13 +564,13 @@
           <div class="cracker-panel">
             <div class="panel-title">HOW IT WORKS</div>
             <ol class="how-list">
-              <li>Each thread holds 128 candidate keys and their curve points.</li>
-              <li>Every step adds G to all 128 points with one batched modular inversion.</li>
+              <li>Each thread holds up to 256 candidate keys and their curve points.</li>
+              <li>Every step adds G to the active points with one batched modular inversion.</li>
               <li>Each point is compressed, SHA-256’d, then RIPEMD-160’d.</li>
               <li>The 20-byte hash is compared with the address’s hash160.</li>
               <li>A match posts the private key back; the page re-derives the address to confirm.</li>
             </ol>
-            <p class="chain-note">Pure JavaScript BigInt math, about 100k keys per second per core. A single GPU is ten thousand times faster. Serious attempts use <a class="source-link" href="https://github.com/albertobsd/keyhunt" target="_blank" rel="noopener">keyhunt</a> or <a class="source-link" href="https://github.com/JeanLucPons/Kangaroo" target="_blank" rel="noopener">Kangaroo</a>.</p>
+            <p class="chain-note">JavaScript field arithmetic and batched curve operations run locally on your CPU. Benchmark your device for its measured rate. Serious attempts use GPU tools such as <a class="source-link" href="https://github.com/albertobsd/keyhunt" target="_blank" rel="noopener">keyhunt</a> or <a class="source-link" href="https://github.com/JeanLucPons/Kangaroo" target="_blank" rel="noopener">Kangaroo</a>.</p>
           </div>
         </aside>
       </div>

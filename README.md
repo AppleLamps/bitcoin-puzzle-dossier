@@ -39,7 +39,7 @@ The 2015 Bitcoin Puzzle Transaction remains one of the most recognizable private
 
 ## Local development
 
-This project is a static site with no build pipeline.
+This project is a static site whose files can be served directly.
 
 1. Clone the repository.
 2. From the project root, serve the files locally:
@@ -47,6 +47,19 @@ This project is a static site with no build pipeline.
    `python3 -m http.server 8000`
 
 3. Open `http://localhost:8000/` in a browser.
+
+To build the optional WebAssembly engine and run the engine and worker checks:
+
+```sh
+npm ci
+npm run build:wasm
+npm test
+```
+
+`build:wasm` compiles `assembly/engine.ts` to `js/engine.wasm`. `npm test` rebuilds
+that asset, checks it against Node hashes and the reference curve implementation,
+then runs the JavaScript engine, worker, and cracker controller regression tests. The current worker uses the
+JavaScript engine.
 
 The web cracker performs all key generation and validation locally; it does not transmit keys to any backend.
 

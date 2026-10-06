@@ -1,0 +1,25 @@
+{
+  "name": "bitcoin-puzzle-dossier",
+  "version": "1.0.0",
+  "description": "A research-driven, browser-based companion to the 2015 Bitcoin Puzzle Transaction. This project brings together the historical context, live solve status, full ledger of all 256 puzzle addresses, and a locally running brute-force cracker that verifies candidate keys without sending anything off-device.",
+  "main": "index.js",
+  "scripts": {
+    "build:wasm": "asc assembly/engine.ts --outFile js/engine.wasm -O3 --noAssert --runtime stub",
+    "test": "npm run build:wasm && node tools/test-wasm-engine.js && node tools/test-engine.js && node tools/test-worker.js && node tools/test-cracker-ui.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AppleLamps/bitcoin-puzzle-dossier.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/AppleLamps/bitcoin-puzzle-dossier/issues"
+  },
+  "homepage": "https://github.com/AppleLamps/bitcoin-puzzle-dossier#readme",
+  "devDependencies": {
+    "assemblyscript": "^0.28.20"
+  }
+}

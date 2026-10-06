@@ -13,8 +13,10 @@
     function fallback(text){
       var ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly',''); ta.style.position = 'fixed'; ta.style.opacity = '0';
       document.body.appendChild(ta); ta.select();
-      try { document.execCommand('copy'); flash('COPIED'); } catch(e){ flash('SELECT TO COPY'); window.getSelection().selectAllChildren(addr); }
+      var copied = false;
+      try { copied = document.execCommand('copy'); } catch(e){}
       document.body.removeChild(ta);
+      if(copied) flash('COPIED'); else window.prompt('Copy BTC donation address:', text);
     }
   });
 }());
