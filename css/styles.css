@@ -380,3 +380,14 @@ body.modal-open{overflow:hidden}
 @media(max-width:800px){.puzzle-facts .modal-facts{grid-template-columns:1fr;gap:4px 0}.puzzle-facts .modal-facts dt{margin-top:10px}}
 .modal-actions{margin:18px 0 0}
 .ledger-page-link{white-space:nowrap}
+
+/* ---- Static puzzle-page index (ledger and landing page) ---- */
+.puzzle-index{padding:34px 0 8px;border-top:1px solid var(--line);margin-top:34px}
+.puzzle-index h2{font-size:24px;line-height:1.15;letter-spacing:-.02em;font-weight:500;margin:0 0 18px}
+.puzzle-index-group{display:grid;grid-template-columns:220px 1fr;gap:24px;padding:12px 0;border-top:1px solid var(--line)}
+.puzzle-index-group b{font:600 11px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.puzzle-index-group p,.puzzle-index-inline{margin:0;font:12px/2 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);overflow-wrap:anywhere}
+.puzzle-index-group a,.puzzle-index-inline a{color:var(--ink);text-decoration:none;margin-right:6px}
+.puzzle-index-group a:hover,.puzzle-index-inline a:hover{color:var(--accent);text-decoration:underline}
+.puzzle-index-inline{margin-top:22px}
+@media(max-width:800px){.puzzle-index-group{grid-template-columns:1fr;gap:4px}}

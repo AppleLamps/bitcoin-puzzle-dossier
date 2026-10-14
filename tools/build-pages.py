@@ -2,7 +2,7 @@
 """Generate the static entry pages and the per-puzzle pages from index.html and the puzzle data.
 
 Run from the repo root:  python3 tools/build-pages.py
-Outputs: case-file/index.html, ledger/index.html, cracker/index.html, puzzle/N/index.html (1..256), sitemap.xml
+Outputs: the puzzle-link blocks in index.html, case-file/index.html, ledger/index.html, cracker/index.html, puzzle/N/index.html (1..256), sitemap.xml
 """
 import re, os, json, html, datetime
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -37,6 +37,27 @@ def iso(d):
     if not d: return ''
     return datetime.datetime.strptime(d, '%d %b %Y').date().isoformat()
 labels = {'open': 'OPEN', 'solved': 'SOLVED', 'preused': 'PRE-USED', 'retired': 'RETIRED'}
+
+# ---------- static puzzle-page links (crawlable without JS) ----------
+def puzzle_links(ns):
+    return ' '.join('<a href="/puzzle/%d/">#%d</a>' % (n, n) for n in ns)
+def fill(s, name, block):
+    s, k = re.subn(r'([ \t]*)<!-- %s:start -->.*?<!-- %s:end -->' % (name, name),
+                   lambda m: '%s<!-- %s:start -->\n%s\n%s<!-- %s:end -->' % (m.group(1), name, block, m.group(1), name), s, flags=re.S)
+    assert k == 1, name
+    return s
+groups = [('Unsolved', [n for n in range(1, 257) if state(n) == 'open']),
+          ('Solved and pre-used', [n for n in range(1, 257) if state(n) in ('solved', 'preused')]),
+          ('Retired by the creator', [n for n in range(1, 257) if state(n) == 'retired'])]
+index_block = '\n'.join(['      <nav class="puzzle-index" aria-label="All puzzle pages">',
+                         '        <h2>Every puzzle has its own page</h2>'] +
+                        ['        <div class="puzzle-index-group"><b>%s · %d</b><p>%s</p></div>' % (label, len(ns), puzzle_links(ns)) for label, ns in groups] +
+                        ['      </nav>'])
+open_block = '            <p class="puzzle-index-inline">Every unsolved puzzle has a page with its address, key range and prize: %s</p>' % puzzle_links(groups[0][1])
+src = fill(fill(index, 'puzzle-index', index_block), 'open-index', open_block)
+if src != index:
+    open('index.html', 'w', encoding='utf-8').write(src)
+index = src
 
 # ---------- entry pages (tab preselected, unique metadata) ----------
 def entry_page(page, path, title, desc, h1_hint):
